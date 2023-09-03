@@ -1,17 +1,12 @@
-/**
- * @type {import('next').NextConfig}
- */
-const nextConfig = {
-  // reactStrictMode: true,
-  // head: {
-  //   link: [
-  //     {
-  //       rel: "icon",
-  //       type: "image/png",
-  //       href: "/assets/img/favicon.png",
-  //     },
-  //   ],
-  // },
+module.exports = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ex.luth.my.id",
+        port: "",
+        pathname: "/media/**",
+      },
+    ],
+  },
 };
-
-module.exports = nextConfig;

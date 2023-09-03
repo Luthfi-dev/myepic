@@ -7,6 +7,25 @@ import FileUploadCard from "../uploadFile";
 
 import dynamic from "next/dynamic";
 
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { header: "3" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link", "image", "video"],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+};
+
 const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
 
 const MyForm = () => {
@@ -46,8 +65,8 @@ const MyForm = () => {
     <form onSubmit={handleSubmit}>
       <div className="row">
         <div className="col-xxl-12 col-md-12">
-          <div className="card info-card sales-card">
-            <div className="filter">
+          <div className="info-card sales-card">
+            <div className="d-flex justify-content-between align-items-center">
               <div
                 className="btn btn-states rounded mr-2"
                 title="Simpan Sebagai Draf"
@@ -95,10 +114,10 @@ const MyForm = () => {
                   type="hidden"
                   name="media"
                   id="n_foto"
-                  value={formData.foto}
+                  value={formData.media}
                   onChange={handleChange}
                 />
-                <FileUploadCard />
+                <FileUploadCard formData={formData} />
               </div>
             </div>
           </div>
@@ -157,10 +176,14 @@ const MyForm = () => {
               <h4>Keterangan</h4>
               <hr />
               <div className="card">
-                Draf : <b>Tersimpan</b>
+                <div className="container">
+                  Draf : <b>Tersimpan</b>
+                </div>
               </div>
               <div className="card">
-                Visibilitas : <b>Private</b>
+                <div className="container">
+                  Visibilitas : <b>Private</b>
+                </div>
               </div>
             </div>
           </div>

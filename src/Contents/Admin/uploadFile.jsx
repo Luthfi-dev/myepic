@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-const FileUploadCard = () => {
+const FileUploadCard = ({ formData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -20,6 +20,7 @@ const FileUploadCard = () => {
     const inputElement = document.getElementById("n_foto");
     if (inputElement) {
         inputElement.value = imageName;
+        formData.media = imageName;
     }
     closeModal();
   };
@@ -35,9 +36,10 @@ const FileUploadCard = () => {
     <div className="file-upload-card p-3 text-center">
       <label htmlFor="file-upload" className="upload-button">
         {!selectedFile && (
-          <button onClick={openModal}>Pilih Media</button>
+          <Image src="/assets/svg/upload.svg" width={300} height={300} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
         )}
       </label>
+      <label className="bg-light w-100"><b>Select file</b></label>
       {selectedFile && (
         <div className="selected-image">
           <img src={`/assets/gambar/${selectedFile}`} alt={selectedFile} width={300} height={200} />

@@ -32,7 +32,7 @@ const AdminNav = () => {
               data-bs-parent="#sidebar-nav"
             >
               <li>
-                <a href="/admin-posting">
+                <a href="/admin/posting">
                   <span>
                     <i
                       className="ri-add-circle-line"
@@ -44,7 +44,7 @@ const AdminNav = () => {
               </li>
 
               <li>
-                <a href="#">
+                <a href="/admin/category">
                   <span>
                     <i
                       className="ri-add-circle-fill"
@@ -58,7 +58,7 @@ const AdminNav = () => {
           </li>
 
           <li className="nav-item">
-            <a className="nav-link collapsed" href="#">
+            <a className="nav-link collapsed" href="/admin/media">
               <i className="bi bi-bank"></i>
               <span>Media</span>
             </a>

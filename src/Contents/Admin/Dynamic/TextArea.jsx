@@ -31,19 +31,21 @@ export default function QuillEditor() {
   const [content, setContent] = useState('');
 
   return (
-    <QuillNoSSRWrapper modules={modules} value={content} onChange={setContent} theme="snow" style={{
-    height: '500px',
-    backgroundColor: 'white',
-    borderRadius: '5px',
-    padding: '10px',
-    maxHeight: '500px', 
-    // overflow: 'auto',
-    // Menambahkan properti CSS untuk kustomisasi thumb scroll
-    scrollbarColor: 'darkgray lightgray', // Warna thumb dan track
-    scrollbarWidth: 'thin', // Lebar thumb
-    // Efek 3D pada thumb scroll
-    // overflowY: 'scroll', // Memaksa thumb scroll tampil selalu
-    // boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)', // Efek 3D    
-  }} />
+    <QuillNoSSRWrapper modules={modules} value={content} onChange={setContent} theme="snow" 
+  // style={{
+  //   height: '500px',
+  //   backgroundColor: 'white',
+  //   borderRadius: '5px',
+  //   padding: '10px',
+  //   maxHeight: '500px', 
+  //   // overflow: 'auto',
+  //   // Menambahkan properti CSS untuk kustomisasi thumb scroll
+  //   scrollbarColor: 'darkgray lightgray', // Warna thumb dan track
+  //   scrollbarWidth: 'thin', // Lebar thumb
+  //   // Efek 3D pada thumb scroll
+  //   // overflowY: 'scroll', // Memaksa thumb scroll tampil selalu
+  //   // boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)', // Efek 3D    
+  // }} 
+  />
   );
 }
