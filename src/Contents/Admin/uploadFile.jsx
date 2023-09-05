@@ -2,6 +2,8 @@ import Image from "next/image";
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import SelectImage from "./AdminMediaForArticel";
+import { linkApi, publicApi } from "../../../utils/globals";
 
 const FileUploadCard = ({ formData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -15,62 +17,70 @@ const FileUploadCard = ({ formData }) => {
     setShowModal(false);
   };
 
-  const handleImageClick = (imageName) => {
-    setSelectedFile(imageName);
-    const inputElement = document.getElementById("n_foto");
-    if (inputElement) {
-        inputElement.value = imageName;
-        formData.media = imageName;
-    }
-    closeModal();
-  };
-
+  const handleImageClick = () => {
+    // setShowModal(false);
+    setSelectedFile(true)
+  }
 
   const handleDeleteImage = () => {
     setSelectedFile(null);
   };
 
-  const imageList = ['1.jpg','2.jpg'];
+  // const imageList = ['1.jpg','2.jpg'];
 
   return (
     <div className="file-upload-card p-3 text-center">
       <label htmlFor="file-upload" className="upload-button">
         {!selectedFile && (
+          <b>
           <Image src="/assets/svg/upload.svg" width={300} height={300} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
+          <label className="bg-light w-100"><b>Select file</b></label>
+          </b>
         )}
       </label>
-      <label className="bg-light w-100"><b>Select file</b></label>
       {selectedFile && (
         <div className="selected-image">
-          <img src={`/assets/gambar/${selectedFile}`} alt={selectedFile} width={300} height={200} />
-          <button
-            className="close-icon"
-            onClick={handleDeleteImage}
-          >
-            &#10006;
-          </button>
-          {/* <input type="text" name="media" id="n_foto" /> */}
+        {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
+          // Jika formData.media adalah gambar (contoh: .jpg atau .png)
+          <Image
+            src={`${publicApi}/${formData.media}`}
+            alt="select media for content"
+            width={300}
+            height={300}
+            objectFit="contain"
+          />
+        ) : formData.media.endsWith('.mp4') ? (
+          // Jika formData.media adalah video (contoh: .mp4)
+          <div>
+          <video controls className="d-md-none" width="300">
+          <source src={`${publicApi}/${formData.media}`} />
+          Maaf, browser Anda tidak mendukung video ini.
+        </video>
+        <video controls className="d-none d-md-block" width="600">
+          <source src={`${publicApi}/${formData.media}`} />
+          Maaf, browser Anda tidak mendukung video ini.
+        </video>
         </div>
+        ) : (
+          // Jika formData.media adalah jenis lain atau tidak ada media yang dipilih
+          <p>Tidak ada media yang dipilih</p>
+        )}
+        <button
+          className="close-icon"
+          onClick={handleDeleteImage}
+        >
+          &#10006;
+        </button>
+      </div>
+
       )}
 
-      <Modal show={showModal} onHide={closeModal} size="lg">
+      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"999999999"}}>
         <Modal.Header closeButton>
           <Modal.Title>Select Media</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <div className="image-list">
-            {imageList.map((imageName, index) => (
-            <img
-              key={index}
-              src={`/assets/gambar/${imageName}`}
-              alt={imageName}
-              className="image-item"
-              onClick={() => handleImageClick(imageName)}
-              width={300}
-              style={{margin : "5px"}}
-            />
-))}
-          </div>
+        <Modal.Body onClick={handleImageClick}>
+          <SelectImage kData={formData} modal={setShowModal} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

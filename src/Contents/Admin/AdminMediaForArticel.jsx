@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { linkApi, publicApi } from '../../../utils/globals';
 
-const AdminContent = () => {
+const AdminContent = ({kData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [mediaData, setMediaData] = useState({ images: [], videos: [] });
+  // const [mediaData, setMediaData] = useState({ images: [], videos: [] });
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState('image');
   const [totalMedia, setTotalMedia] = useState(0);
   const [dataAll, setDataAll] = useState([]);
 
+  const handleMediaClick = (imageName) => {
+    kData.media = imageName;
+    modal(false);
+    console.log(kData);
+  };
 
+  console.log(publicApi);
+    // GET DATA API
   const fetchData = async () => {
     let mediaType = activeTab === 'image' ? 'image' : 'video';
 
@@ -24,6 +31,7 @@ const AdminContent = () => {
     const response = await fetch(`${linkApi}?page=${currentPage}&type=${mediaType}`);
     const dataAmbil = await response.json();
     setDataAll(dataAmbil.data);
+    console.log(response,dataAmbil.data)
 
 };
 
@@ -56,7 +64,7 @@ const AdminContent = () => {
     formData.append('user_id', '1');
 
     try {
-      const response = await fetch('${linkApi}', {
+      const response = await fetch(`${linkApi}`, {
         method: 'POST',
         body: formData,
       });
@@ -146,16 +154,6 @@ const renderPagination = () => {
 
   return (
     <>
-      <div className="pagetitle">
-        <nav>
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item">
-              <a href="/">Home</a>
-            </li>
-            <li className="breadcrumb-item active">Media</li>
-          </ol>
-        </nav>
-      </div>
       <section className="row">
         <div className="col-xxl-12 col-md-12">
           <div className="card info-card sales-card p-2">
@@ -201,7 +199,7 @@ const renderPagination = () => {
                     {dataAll.map((image) => (
                       <div key={image.id} className="col-md-3 mb-3">
                         <div className="d-flex flex-column align-items-center">
-                          <Image src={`${publicApi}/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" />
+                          <Image src={`https://ex.luth.my.id/media/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" onClick={() => handleMediaClick(image.nama)} />
                           <button onClick={() => deleteMedia(image.id)} className="btn btn-danger mt-2"><i className='bi bi-trash'></i></button>
                         </div>
                       </div>
@@ -213,11 +211,12 @@ const renderPagination = () => {
                   <div className="row">
                     {dataAll.map((video) => (
                       <div key={video.id} className="col-md-3 mb-3">
-                        <video controls width="250">
-                          <source src={`${publicApi}/${video.nama}`} type={video.mimetype} />
+                        <video controls width="250" height="300">
+                          <source src={`${publicApi}/${video.nama}`} onClick={() => handleMediaClick(video.nama)} />
                           Maaf, browser Anda tidak mendukung video ini.
                         </video>
-                        <button onClick={() => deleteMedia(video.id)} className="btn btn-danger mt-2">Hapus Media</button>
+                        <button onClick={() => deleteMedia(video.id)} className="btn btn-danger mt-2 btn-sm"><i className='bi bi-trash'></i> Media</button>
+                        <button onClick={() => handleMediaClick(video.nama)} className="btn btn-primary mt-2 btn-sm" style={{backgroundColor:"#6776F4",color:"white"}}><i className='bi bi-check'></i> Pilih</button>
                       </div>
                     ))}
                   </div>

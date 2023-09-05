@@ -1,9 +1,12 @@
 // AdminContentProses.js
 
-import React, { useState } from "react";
-// import QuillEditor from "../Dynamic/TextArea";
-// import QuillEditor from "../Dynamic/QuilText";
+import React, { useState, useEffect } from "react";
+const axios = require("axios");
+import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../uploadFile";
+import { artikelApi, artikelPageApi } from "../../../../utils/globals";
+import TagInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css";
 
 import dynamic from "next/dynamic";
 
@@ -29,20 +32,117 @@ const modules = {
 const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
 
 const MyForm = () => {
+  const [addCardClass, setAddCardClass] = useState(false);
+  const [tags, setTags] = useState([]); // State untuk menyimpan tags
+
+  useEffect(() => {
+    // Fungsi untuk menangani peristiwa scroll
+    const handleScroll = () => {
+      if (window.scrollY >= 100) {
+        setAddCardClass(true);
+      } else {
+        setAddCardClass(false);
+      }
+    };
+
+    // Tambahkan event listener untuk mendengarkan peristiwa scroll
+    window.addEventListener("scroll", handleScroll);
+
+    // Jangan lupa untuk menghapus event listener saat komponen unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
+    id: uuidv4(),
     judul: "",
     kategori: "",
     media: "",
+    tags: [],
+    slugg: "",
     quillContent: "",
   });
 
-  const handleChange = (e) => {
+  // BAGIAN MENGHANDLE slugs
+
+  // Fungsi untuk mengambil data dari API berdasarkan judul
+  async function fetchDataFromApi(judul) {
+    try {
+      const response = await axios.get(artikelApi);
+      const data = response.data;
+
+      // Mengumpulkan semua slug dari data API ke dalam array
+      const slugs = data.map((item) => item.slug);
+
+      // Memeriksa apakah judul sudah ada dalam slug yang ada
+      const slugFromTitle = createSlug(judul);
+
+      if (slugs.includes(slugFromTitle)) {
+        // Jika slug sudah ada, buat slug unik
+        const uniqueSlug = makeSlugUnique(slugFromTitle, slugs);
+        return uniqueSlug;
+      } else {
+        // Jika slug belum ada, gunakan slug dari judul
+        return slugFromTitle;
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+      // Handle kesalahan sesuai kebutuhan Anda
+    }
+  }
+
+  // Fungsi untuk mengubah judul menjadi slug
+  function createSlug(title) {
+    const slug = title.toLowerCase().replace(/\s+/g, "-");
+    return slug;
+  }
+
+  // Fungsi untuk membuat slug menjadi unik
+  function makeSlugUnique(slug, existingSlugs) {
+    let uniqueSlug = slug;
+    let counter = 1;
+
+    while (existingSlugs.includes(uniqueSlug)) {
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
+    }
+
+    return uniqueSlug;
+  }
+
+  // END BAGIAN SLUGS
+
+  useEffect(() => {
+    console.log("form berubah", formData);
+  }, [formData]);
+
+  const handleTagsChange = (newTags) => {
+    setTags(newTags); // Update state tags saat tags berubah
+    setFormData((prevData) => ({
+      ...prevData,
+      tags: newTags, // Perbarui formData.tags dengan nilai terbaru
+    }));
+    console.log(formData.tags); // Tampilkan nilai terbaru dari tags
+  };
+
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     console.log("Input berubah:", name, value, formData);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+
+    if (name === "judul") {
+      const result = await fetchDataFromApi(value);
+      document.querySelector("#slugg").value = result;
+      // Gunakan fungsi setFormData lagi untuk memperbarui formData
+      setFormData((prevData) => ({
+        ...prevData,
+        slugg: result,
+      }));
+    }
   };
 
   const handleQuillChange = (value) => {
@@ -51,19 +151,172 @@ const MyForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       quillContent: value,
-      media: i_foto.value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  // FUNGSI onBlur
+  const tidaFokuslagi = async () => {
+    try {
+      const response = await axios.get(artikelApi);
+      const hasilData = response.data;
+
+      // UPDATE INFO DRAF
+      // Ambil elemen dengan ID "drafInfo"
+      const drafInfoElement = document.getElementById("drafInfo");
+      drafInfoElement.innerHTML = "draf tersimpan";
+      // Set timeout selama 3 detik untuk mengosongkan elemen drafInfo
+      setTimeout(() => {
+        // Mengosongkan innerHTML elemen drafInfo
+        drafInfoElement.innerHTML = "";
+      }, 3000);
+      // END DRAF INFO
+
+      const adaYangSama = hasilData.some((item) => item.id === formData.id);
+      console.log("samaa", adaYangSama);
+
+      if (adaYangSama) {
+        // sebelum di put cek dulu status artikelnya
+        const responseStatus = await axios.get(
+          `${artikelPageApi}?id=${formData.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const statusBaru = responseStatus.data;
+        const dataBaruFix = statusBaru.data[0].status;
+        // Contoh penggunaan
+        const dataToSend = {
+          id: formData.id,
+          judul: formData.judul,
+          media: formData.media,
+          kategori: formData.kategori,
+          isi: formData.quillContent,
+          tags: `${formData.tags}`,
+          slug: formData.slugg,
+          user_id: "1",
+          status: dataBaruFix,
+        };
+        const response = await axios.put(
+          `${artikelApi}/${formData.id}`,
+          dataToSend,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("update", response);
+        return true;
+      } else {
+        // Contoh penggunaan
+        const dataToSend = {
+          id: formData.id,
+          judul: formData.judul,
+          media: formData.media,
+          kategori: formData.kategori,
+          isi: formData.quillContent,
+          tags: `${formData.tags}`,
+          slug: formData.slugg,
+          user_id: "1",
+          status: "draf",
+        };
+        const response = await axios.post(artikelApi, dataToSend, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("post", response);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Lakukan proses penyimpanan data di sini, termasuk formData.quillContent
-    console.log("Data yang akan disimpan:", formData);
+    const tidakFokus = await tidaFokuslagi();
+    console.log(tidakFokus);
+
+    // Contoh penggunaan
+    const dataToSend = {
+      id: formData.id,
+      judul: formData.judul,
+      media: formData.media,
+      kategori: formData.kategori,
+      isi: formData.quillContent,
+      tags: `${formData.tags}`,
+      slug: formData.slugg,
+      user_id: "1",
+      status: "proses",
+    };
+
+    // hentikan post jika data kosong
+    if (
+      formData.judul == "" ||
+      formData.quillContent == "" ||
+      formData.tags == ""
+    ) {
+      alert("kolom judul, isi postingan dan tags tidak boleh kosong");
+      return;
+    }
+
+    let apiMethod = "post"; // Default method
+    let link = artikelApi;
+
+    if (tidakFokus) {
+      apiMethod = "put";
+      link = `${artikelApi}/${formData.id}`;
+    }
+
+    // Fungsi untuk mengirim data ke API
+    async function postDataToAPI(data) {
+      try {
+        const response = await axios[apiMethod](link, data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === 200) {
+          alert(
+            `Data berhasil ${
+              apiMethod === "post" ? "disimpan" : "diupdate"
+            } ke API`
+          );
+        } else {
+          throw new Error("Gagal mengirim data ke API");
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Terjadi kesalahan:", error);
+      }
+    }
+
+    postDataToAPI(dataToSend);
+    console.log(dataToSend);
+
+    // END MENYIMPAN DATA KE API
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="row">
+      <div
+        id="headPosting"
+        className={`row ${addCardClass ? "card" : ""}`}
+        style={{
+          position: "sticky",
+          top: "60px",
+          zIndex: "99999",
+          paddingTop: "10px",
+          marginRight: "-0",
+          marginLeft: "0px",
+        }}
+      >
         <div className="col-xxl-12 col-md-12">
           <div className="info-card sales-card">
             <div className="d-flex justify-content-between align-items-center">
@@ -75,11 +328,17 @@ const MyForm = () => {
                   {" "}
                   <span className="d-none-md"></span>
                 </i>
+                <i
+                  className="text-success"
+                  id="drafInfo"
+                  style={{ fontSize: "12px" }}
+                ></i>
               </div>
               <button
                 type="submit"
                 className="btn btn-primary rounded"
                 title="Publish Artikel"
+                style={{ backgroundColor: "#6776F4", color: "white" }}
               >
                 <i className="ri-send-plane-fill">
                   {" "}
@@ -101,6 +360,7 @@ const MyForm = () => {
               placeholder="Masukkan Judul"
               value={formData.judul}
               onChange={handleChange}
+              onBlur={tidaFokuslagi}
             />
           </div>
         </div>
@@ -110,13 +370,6 @@ const MyForm = () => {
           <div className="row">
             <div className="col-xxl-12 col-md-12">
               <div className="card info-card sales-card p-0">
-                <input
-                  type="hidden"
-                  name="media"
-                  id="n_foto"
-                  value={formData.media}
-                  onChange={handleChange}
-                />
                 <FileUploadCard formData={formData} />
               </div>
             </div>
@@ -129,8 +382,10 @@ const MyForm = () => {
                 style={{ height: "550px" }}
               >
                 <QuillEditor
+                  modules={modules}
                   value={formData.quillContent}
                   onChange={handleQuillChange}
+                  onBlur={tidaFokuslagi}
                   style={{
                     height: "500px",
                     backgroundColor: "white",
@@ -162,10 +417,12 @@ const MyForm = () => {
                     className="form-control"
                     value={formData.kategori}
                     onChange={handleChange}
+                    onBlur={tidaFokuslagi}
                   >
-                    <option value="Foto">Foto</option>
-                    <option value="Flayer">Flayer</option>
-                    <option value="Video">Video</option>
+                    <option>--Pilih kategori--</option>
+                    <option value="foto">Foto</option>
+                    <option value="flayer">Flayer</option>
+                    <option value="video">Video</option>
                   </select>
                 </div>
               </div>
@@ -173,16 +430,113 @@ const MyForm = () => {
           </div>
           <div className="col-xxl-12 col-md-12">
             <div className="card info-card sales-card p-2">
-              <h4>Keterangan</h4>
-              <hr />
-              <div className="card">
-                <div className="container">
-                  Draf : <b>Tersimpan</b>
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseOne"
+                      aria-expanded="true"
+                      aria-controls="collapseOne"
+                    >
+                      <b>Tags</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseOne"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <TagInput
+                        id="Tags"
+                        className="form-control"
+                        value={tags}
+                        onChange={handleTagsChange}
+                        onBlur={tidaFokuslagi}
+                      />
+                      <span
+                        className="text-success"
+                        style={{
+                          position: "absolute",
+                          fontSize: "8pt",
+                          marginTop: "0px",
+                        }}
+                      >
+                        <i>Tekan enter untuk add Tag</i>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="card">
-                <div className="container">
-                  Visibilitas : <b>Private</b>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseTwo"
+                      aria-expanded="true"
+                      aria-controls="collapseTwo"
+                    >
+                      <b>Slug</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseTwo"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <input id="slugg" className="form-control" readOnly />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse3"
+                      aria-expanded="true"
+                      aria-controls="collapse3"
+                    >
+                      <b>Keterangan</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse3"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <div className="container mt-2">
+                        Draf : <b>Tersimpan</b>
+                      </div>
+                      <div className="container mt-2">
+                        Visibilitas : <b>Private</b>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

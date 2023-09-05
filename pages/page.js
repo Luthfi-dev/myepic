@@ -1,5 +1,5 @@
 // pages/page.js
-import RootLayout from "../src/components/Admin/TemplateLayout";
+import RootLayout from "../src/components/Admin/AdminLayout";
 
 export default function Page() {
   return (

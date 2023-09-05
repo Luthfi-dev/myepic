@@ -1,11 +1,19 @@
 import React from "react";
+import { publicApi } from "../../utils/globals";
+import Image from "next/image";
+import Head from "next/head";
 
 const HomeIndex = () => {
   return (
-    <div>
-      <h1>Selamat Datang di Proyek Next.js</h1>
-      <p>Ini adalah halaman beranda.</p>
-    </div>
+    <>
+      <Image
+        src={`${publicApi}/default/coming-soon.png`}
+        alt="Foto A"
+        width={500}
+        height={300}
+        layout="responsive"
+      />
+    </>
   );
 };
 
