@@ -7,8 +7,8 @@ const AdminNav = () => {
       <aside id="sidebar" className="sidebar">
         <ul className="sidebar-nav" id="sidebar-nav">
           <li className="nav-item">
-            <Link href="/admin">
-              <a className="nav-link ">
+            <Link>
+              <a href="/admin" className="nav-link ">
                 <i className="bi bi-grid"></i>
                 <span>Dashboard</span>
               </a>
@@ -19,8 +19,9 @@ const AdminNav = () => {
           {/* <!-- End Components Nav --> */}
 
           <li className="nav-item">
-            <Link href="#">
+            <Link legacyBehavior>
               <a
+                href="#"
                 className="nav-link collapsed"
                 data-bs-target="#forms-nav"
                 data-bs-toggle="collapse"
@@ -36,8 +37,8 @@ const AdminNav = () => {
               data-bs-parent="#sidebar-nav"
             >
               <li>
-                <Link href="/admin/posting">
-                  <a>
+                <Link legacyBehavior>
+                  <a href="/admin/posting">
                     <span>
                       <i
                         className="ri-add-circle-line"
@@ -50,8 +51,8 @@ const AdminNav = () => {
               </li>
 
               <li>
-                <Link href="/admin/category">
-                  <a>
+                <Link legacyBehavior>
+                  <a href="/admin/category">
                     <span>
                       <i
                         className="ri-add-circle-fill"
@@ -66,8 +67,8 @@ const AdminNav = () => {
           </li>
 
           <li className="nav-item">
-            <Link href="/admin/media">
-              <a className="nav-link collapsed">
+            <Link legacyBehavior>
+              <a href="/admin/media" className="nav-link collapsed">
                 <i className="bi bi-bank"></i>
                 <span>Media</span>
               </a>
@@ -78,8 +79,8 @@ const AdminNav = () => {
           <li className="nav-heading">Settings</li>
 
           <li className="nav-item">
-            <Link href="users-profile.html">
-              <a className="nav-link collapsed">
+            <Link legacyBehavior>
+              <a href="users-profile.html" className="nav-link collapsed">
                 <i className="bi bi-person"></i>
                 <span>Profile</span>
               </a>
@@ -88,8 +89,8 @@ const AdminNav = () => {
           {/* <!-- End Profile Page Nav --> */}
 
           <li className="nav-item">
-            <Link href="#">
-              <a className="nav-link collapsed">
+            <Link legacyBehavior>
+              <a href="#" className="nav-link collapsed">
                 <i className="bi bi-box-arrow-in-right"></i>
                 <span>LogOut</span>
               </a>
