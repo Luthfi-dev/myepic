@@ -1,8 +1,92 @@
 // pages/admin.js
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect }  from "react";
+import { artikelPageApi, publicApi } from "../../../utils/globals";
+import axios from "axios";
+import Link from "next/link";
 
 const AdminContent = () => {
+    const [dataAll, setDataAll] = useState([]);
+
+   async function fetchData() {
+    try {
+      const response = await axios.get(`${artikelPageApi}?jumlah=5&status=proses`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      const data = response.data;
+      const postinganTeratas = data.data;
+      setDataAll(postinganTeratas);
+    } catch (error) {
+      console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+      // Handle kesalahan sesuai kebutuhan Anda
+    }
+  }
+  
+  useEffect(() => {
+    fetchData();
+console.log(dataAll);
+  }, [dataAll]);
+
+  // Fungsi untuk menghasilkan elemen-elemen JSX dari dataAll
+const renderDataAll = (dataAll) => {
+  return dataAll.map((item, index) => {
+    const { media, judul, isi } = item;
+
+    // Mendapatkan ekstensi file foto dari nama file
+    const fotoEkstensi = media ? media.split(".").pop().toLowerCase() : "";
+
+    // Menentukan apakah ekstensi adalah gambar atau video
+    const isImage = ["jpg", "jpeg", "png", "gif"].includes(fotoEkstensi);
+    
+    return (
+      <div className="post-item clearfix" key={index}>
+        {media ? (
+          // Jika media terisi, lakukan pengecekan jenis media
+          isImage ? (
+            // Jika ekstensi adalah gambar, tampilkan gambar dari publicApi
+            <Image
+              width={100}
+              height={50}
+              objectFit="contain"
+              src={`${publicApi}/${media}`}
+              alt="foto thunbnail"
+            />
+          ) : (
+            // Jika ekstensi bukan gambar, tampilkan thumbnail video dari path yang sesuai
+            <Image
+              width={100}
+              height={50}
+              objectFit="contain"
+              src={`${publicApi}/default/thum_video.png`}
+              alt="video  thunbnail"
+            />
+          )
+        ) : (
+          // Jika media kosong, tampilkan gambar baru
+          <Image
+            width={100}
+            height={50}
+            objectFit="contain"
+            src={`${publicApi}/default/no_picture.png`}
+            alt="foto thunbnail no image"
+          />
+        )}
+        <h4>
+          <a href="#">{judul}</a>
+        </h4>
+        <p className="text-app">
+          {isi.length > 50
+            ? `${isi.substring(0, 50)}...`
+            : isi}
+        </p>
+      </div>
+    );
+  });
+};
+
+
   return (
     <>
     <div className="pagetitle">
@@ -108,35 +192,16 @@ const AdminContent = () => {
         <div className="row">
           <div className="col-xxl-8 col-md-8">
             <div className="card p-2">
-              <h5 className="card-title">Postingan <span>| Today</span></h5>
+              <h5 className="card-title">Postingan <span>| Teratas</span></h5>
 
               <div className="news m-2">
-                <div className="post-item clearfix">
-                  <Image width={100} height={50} objectFit="contain" src="/assets/img/news-1.jpg" alt="" />
-                  <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                  <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-                </div>
+                {renderDataAll(dataAll)}
               </div>
-              <div className="news m-2">
-                <div className="post-item clearfix">
-                  <Image width={100} height={50} objectFit="contain" src="/assets/img/news-1.jpg" alt="" />
-                  <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                  <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-                </div>
-              </div>
-              <div className="news m-2">
-                <div className="post-item clearfix">
-                  <Image width={100} height={50} objectFit="contain" src="/assets/img/news-1.jpg" alt="" />
-                  <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                  <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-                </div>
-              </div>
-              <div className="news m-2">
-                <div className="post-item clearfix">
-                  <Image width={100} height={50} objectFit="contain" src="/assets/img/news-1.jpg" alt="" />
-                  <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                  <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-                </div>
+
+              <div className="row mt-3">
+                <center>
+                  <button className="btn btn-app btn-sm">semua artikel <i className="bi bi-arrow-right"></i></button>
+                </center>
               </div>
               {/* <!-- End sidebar recent posts--> */}
 

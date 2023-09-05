@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../uploadFile";
-import { artikelApi } from "../../../../utils/globals";
+import { artikelApi, artikelPageApi } from "../../../../utils/globals";
 import TagInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 
@@ -160,10 +160,32 @@ const MyForm = () => {
       const response = await axios.get(artikelApi);
       const hasilData = response.data;
 
+      // UPDATE INFO DRAF
+      // Ambil elemen dengan ID "drafInfo"
+      const drafInfoElement = document.getElementById("drafInfo");
+      drafInfoElement.innerHTML = "draf tersimpan";
+      // Set timeout selama 3 detik untuk mengosongkan elemen drafInfo
+      setTimeout(() => {
+        // Mengosongkan innerHTML elemen drafInfo
+        drafInfoElement.innerHTML = "";
+      }, 3000);
+      // END DRAF INFO
+
       const adaYangSama = hasilData.some((item) => item.id === formData.id);
       console.log("samaa", adaYangSama);
 
       if (adaYangSama) {
+        // sebelum di put cek dulu status artikelnya
+        const responseStatus = await axios.get(
+          `${artikelPageApi}?id=${formData.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const statusBaru = responseStatus.data;
+        const dataBaruFix = statusBaru.data[0].status;
         // Contoh penggunaan
         const dataToSend = {
           id: formData.id,
@@ -174,6 +196,7 @@ const MyForm = () => {
           tags: `${formData.tags}`,
           slug: formData.slugg,
           user_id: "1",
+          status: dataBaruFix,
         };
         const response = await axios.put(
           `${artikelApi}/${formData.id}`,
@@ -232,7 +255,11 @@ const MyForm = () => {
     };
 
     // hentikan post jika data kosong
-    if (!formData.judul || !formData.quillContent || !formData.tags) {
+    if (
+      formData.judul == "" ||
+      formData.quillContent == "" ||
+      formData.tags == ""
+    ) {
       alert("kolom judul, isi postingan dan tags tidak boleh kosong");
       return;
     }
@@ -301,6 +328,11 @@ const MyForm = () => {
                   {" "}
                   <span className="d-none-md"></span>
                 </i>
+                <i
+                  className="text-success"
+                  id="drafInfo"
+                  style={{ fontSize: "12px" }}
+                ></i>
               </div>
               <button
                 type="submit"
