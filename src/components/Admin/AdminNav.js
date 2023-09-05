@@ -7,8 +7,8 @@ const AdminNav = () => {
       <aside id="sidebar" className="sidebar">
         <ul className="sidebar-nav" id="sidebar-nav">
           <li className="nav-item">
-            <Link>
-              <a href="/admin" className="nav-link ">
+            <Link href="/admin" legacyBehavior>
+              <a className="nav-link ">
                 <i className="bi bi-grid"></i>
                 <span>Dashboard</span>
               </a>
@@ -19,9 +19,8 @@ const AdminNav = () => {
           {/* <!-- End Components Nav --> */}
 
           <li className="nav-item">
-            <Link legacyBehavior>
+            <Link href="#" legacyBehavior>
               <a
-                href="#"
                 className="nav-link collapsed"
                 data-bs-target="#forms-nav"
                 data-bs-toggle="collapse"
@@ -37,8 +36,8 @@ const AdminNav = () => {
               data-bs-parent="#sidebar-nav"
             >
               <li>
-                <Link legacyBehavior>
-                  <a href="/admin/posting">
+                <Link href="/admin/posting" legacyBehavior>
+                  <a>
                     <span>
                       <i
                         className="ri-add-circle-line"
@@ -51,8 +50,8 @@ const AdminNav = () => {
               </li>
 
               <li>
-                <Link legacyBehavior>
-                  <a href="/admin/category">
+                <Link href="/admin/category" legacyBehavior>
+                  <a>
                     <span>
                       <i
                         className="ri-add-circle-fill"
@@ -67,8 +66,8 @@ const AdminNav = () => {
           </li>
 
           <li className="nav-item">
-            <Link legacyBehavior>
-              <a href="/admin/media" className="nav-link collapsed">
+            <Link href="/admin/media" legacyBehavior>
+              <a className="nav-link collapsed">
                 <i className="bi bi-bank"></i>
                 <span>Media</span>
               </a>
@@ -79,8 +78,8 @@ const AdminNav = () => {
           <li className="nav-heading">Settings</li>
 
           <li className="nav-item">
-            <Link legacyBehavior>
-              <a href="users-profile.html" className="nav-link collapsed">
+            <Link href="users-profile.html" legacyBehavior>
+              <a className="nav-link collapsed">
                 <i className="bi bi-person"></i>
                 <span>Profile</span>
               </a>
@@ -89,8 +88,8 @@ const AdminNav = () => {
           {/* <!-- End Profile Page Nav --> */}
 
           <li className="nav-item">
-            <Link legacyBehavior>
-              <a href="#" className="nav-link collapsed">
+            <Link href="#" legacyBehavior>
+              <a className="nav-link collapsed">
                 <i className="bi bi-box-arrow-in-right"></i>
                 <span>LogOut</span>
               </a>

@@ -27,7 +27,7 @@ const AdminContent = () => {
   useEffect(() => {
     fetchData();
 console.log(dataAll);
-  }, [dataAll]);
+  }, []);
 
   // Fungsi untuk menghasilkan elemen-elemen JSX dari dataAll
 const renderDataAll = (dataAll) => {
