@@ -1,36 +1,325 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import DataPostingProses from "./Proses/DataPostingProses"
+import { artikelPageApi, publicApi } from "../../../utils/globals";
+import Link from "next/link";
 
 const DataPosting = () => {
-    return (
-        <>
-        <div className="pagetitle">
-          <nav>
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item">
-                <a href="/">Home</a>
-              </li>
-              <li className="breadcrumb-item active">Data Posting</li>
-            </ol>
-          </nav>
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState('draf');
+  const [totalMedia, setTotalMedia] = useState(0);
+  const [rawData, setRawData] = useState([]);
+  const [dataAll, setDataAll] = useState([]);
+  const [searchText, setSearchText] = useState(''); // State untuk menyimpan nilai pencarian
+
+  const fetchData = async () => {
+    try {
+      const countResponse = await fetch(`${artikelPageApi}`);
+      const countData = await countResponse.json();
+      const totalCount = countData.total;
+      setTotalMedia(totalCount);
+
+      const response = await fetch(
+        activeTab !== 'draf'
+          ? `${artikelPageApi}?jumlah=10&page=${currentPage}&search=${searchText}`
+          : `${artikelPageApi}?status=draf&page=${currentPage}&search=${searchText}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Gagal mengambil data.');
+      }
+
+      const dataAmbil = await response.json();
+
+      const filteredDataAll = dataAmbil.data.filter((item) =>
+        activeTab !== 'draf' ? item.status !== 'draf' : true
+      );
+
+      setTotalMedia(dataAmbil.total);
+      setDataAll(filteredDataAll);
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+    }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleSearch = () => {
+    fetchData();
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, activeTab, searchText]); // Tambahkan searchText sebagai dependensi useEffect
+
+  function filterHTMLTags(text) {
+    return text.replace(/<\/?[^>]+(>|$)/g, "");
+  }
+
+  const renderDataAll = (dataAll) => {
+    return dataAll.map((item, index) => {
+      const { id, media, judul, isi } = item;
+      const fotoEkstensi = media ? media.split(".").pop().toLowerCase() : "";
+      const isImage = ["jpg", "jpeg", "png", "gif"].includes(fotoEkstensi);
+
+      return (
+        <div className="post-item clearfix" key={index}>
+          <div className="row">
+            <div className="col-lg-11">
+              <Link href={`admin/view/${id}`}>
+            {media ? (
+              isImage ? (
+                <Image
+                  width={100}
+                  height={80}
+                  objectFit="contain"
+                  src={`${publicApi}/${media}`}
+                  alt="foto thunbnail"
+                />
+              ) : (
+                <Image
+                  width={100}
+                  height={80}
+                  objectFit="contain"
+                  src={`${publicApi}/default/thum_video.png`}
+                  alt="video  thunbnail"
+                />
+              )
+            ) : (
+              <Image
+                width={100}
+                height={50}
+                objectFit="contain"
+                src={`${publicApi}/default/no_picture.png`}
+                alt="foto thunbnail no image"
+              />
+            )}
+            <h4>{judul}</h4>
+            <p className="text-app">
+              {isi.length > 50
+                ? `${filterHTMLTags(isi).substring(0, 50)}...`
+                : isi}
+            </p>
+          </Link>
+          
+          </div>
+          <div className="col-lg-1 end-0">
+              <Link className="btn btn-outline-warning d-none d-lg-inline" href={`/admin/posting/edit?id=${id}`}>
+                <i className="bi bi-pencil-square"></i>
+              </Link>
+              <Link className="btn btn-outline-danger d-none d-lg-inline" href={`/admin/posting/delete/${id}`} style={{marginLeft: "5px"}}>
+                <i className="bi bi-trash"></i>
+              </Link>
+            </div>
+            <div className="col-lg-1 mt-3 mb-2">
+              <Link className="btn btn-outline-warning btn-sm d-inline d-lg-none" href={`/admin/posting/edit?id=${id}`}>
+                <i className="bi bi-pencil-square"></i>
+              </Link>
+              <Link className="btn btn-outline-danger btn-sm d-inline d-lg-none" href={`/admin/posting/delete/${id}`} style={{marginLeft: "5px"}}>
+                <i className="bi bi-trash"></i>
+              </Link>
+            </div>
+          <hr />
+            </div>
+            
         </div>
+      );
+    });
+  };
 
-        {/* section content */}
+  const renderPagination = () => {
+    const totalPages = Math.ceil(totalMedia / 10);
 
-        {/* PROSES */}
-        <div className="row">
-          <div className="card">
-            <div className="card-body p-3">
-              <div className="col-lg-4">
-                tes
-              </div>
+    if (totalPages <= 1) {
+      return null;
+    }
+
+    const currentPageIndex = currentPage - 1;
+
+    const renderPageButton = (pageNumber) => (
+      <button
+        key={pageNumber}
+        onClick={() => handlePageChange(pageNumber)}
+        className={`page-link rounded-circle ${currentPage === pageNumber ? 'active' : ''}`}
+      >
+        {pageNumber}
+      </button>
+    );
+
+    return (
+      <nav aria-label="Page navigation example">
+        <ul className="pagination">
+          {currentPage > 1 && (
+            <>
+              <li className="btn btn-light bordered" onClick={() => handlePageChange(1)}>previous</li>
+              {currentPage > 2 && <span className="ellipsis">...</span>}
+            </>
+          )}
+
+          {currentPage > 1 && renderPageButton(currentPage - 1)}
+
+          {renderPageButton(currentPage)}
+
+          {currentPage < totalPages && renderPageButton(currentPage + 1)}
+
+          {currentPage < totalPages - 1 && <span className="ellipsis">...</span>}
+          {currentPage < totalPages - 1 && renderPageButton(totalPages)}
+
+          {currentPage < totalPages && (
+            <li className="btn btn-light bordered" onClick={() => handlePageChange(totalPages)}>Next</li>
+          )}
+        </ul>
+      </nav>
+    );
+  };
+
+  return (
+    <>
+      <div className="pagetitle">
+        <nav>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <a href="/">Home</a>
+            </li>
+            <li className="breadcrumb-item active">Data Posting</li>
+          </ol>
+        </nav>
+      </div>
+
+      <div className="row">
+        <div className="col-xxl-12 col-md-12">
+          <div className="card p-2">
+            <h5 className="card-title p-2">
+              Semua <span>| Postingan</span>
+            </h5>
+
+            <div className="news m-2">
+              <section className="row">
+                <div className="col-xxl-12 col-md-12">
+                  <div className="card-body">
+                    <ul
+                      className="nav nav-tabs nav-tabs-bordered d-flex"
+                      id="borderedTabJustified"
+                      role="tablist"
+                    >
+                      <li className="nav-item flex-fill" role="presentation">
+                        <button
+                          className={`nav-link w-100 ${
+                            activeTab === "draf" ? "active" : ""
+                          }`}
+                          id="home-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#bordered-justified-home"
+                          type="button"
+                          role="tab"
+                          aria-controls="draf"
+                          aria-selected={activeTab === "draf"}
+                          onClick={() => handleTabChange("draf")}
+                        >
+                          Draf
+                        </button>
+                      </li>
+                      <li className="nav-item flex-fill" role="presentation">
+                        <button
+                          className={`nav-link w-100 ${
+                            activeTab === "artikel" ? "active" : ""
+                          }`}
+                          id="profile-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#bordered-justified-profile"
+                          type="button"
+                          role="tab"
+                          aria-controls="artikels"
+                          aria-selected={activeTab === "artikel"}
+                          onClick={() => handleTabChange("artikel")}
+                        >
+                          Artikel
+                        </button>
+                      </li>
+                    </ul>
+                    <div
+                      className="tab-content pt-3"
+                      id="borderedTabJustifiedContent"
+                    >
+                      <div
+                        className={`tab-pane fade ${
+                          activeTab === "draf" ? "active show" : ""
+                        }`}
+                        id="bordered-justified-home"
+                        role="tabpanel"
+                        aria-labelledby="image-tab"
+                      >
+                        <div className="row mb-3">
+                          <div className="col-md-12">
+                            {/* <div className="input-group mb-3">
+                              <input
+                                id="mysearch"
+                                type="text"
+                                className="form-control"
+                                placeholder="Cari..."
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                              />
+                              <button
+                                className="btn btn-outline-secondary btn-app"
+                                type="button"
+                                onClick={() => handleSearch()}
+                              >
+                               <i className="bi bi-search"></i>
+                              </button>
+                            </div> */}
+                          </div>
+                        </div>
+                        {renderDataAll(dataAll)}
+                        {renderPagination()}
+                      </div>
+                      <div
+                        className={`tab-pane fade ${
+                          activeTab === "artikel" ? "active show" : ""
+                        }`}
+                        id="bordered-justified-profile"
+                        role="tabpanel"
+                        aria-labelledby="artikels-tab"
+                      >
+                        <div className="row mb-3">
+                          <div className="col-md-12">
+                            <div className="input-group mb-12">
+                              <input
+                                id="mysearch"
+                                type="text"
+                                className="form-control"
+                                placeholder="Cari..."
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                              />
+                              <button
+                                className="btn btn-outline-secondary btn-app"
+                                type="button"
+                                onClick={() => handleSearch()}
+                              >
+                               <i className="bi bi-search"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        {renderDataAll(dataAll)}
+                        {renderPagination()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>
-            
-        </>
-    )
-}
+      </div>
+    </>
+  );
+};
 
 export default DataPosting;

@@ -1,7 +1,34 @@
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 const AdminHeader = () => {
+  const router = useRouter();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  // Fungsi untuk menampilkan atau menyembunyikan sidebar
+  function tampilkanToggleSidebar() {
+    setSidebarOpen(!isSidebarOpen);
+  }
+
+  // Efek ini akan dipanggil setiap kali URL berubah
+  useEffect(() => {
+    // Tutup sidebar saat URL berubah
+    setSidebarOpen(false);
+  }, [router.asPath]); // Memantau perubahan URL
+
+  // Set class pada body sesuai dengan status sidebar
+  useEffect(() => {
+    const body = document.body;
+    if (isSidebarOpen) {
+      body.classList.add("toggle-sidebar");
+    } else {
+      body.classList.remove("toggle-sidebar");
+    }
+  }, [isSidebarOpen]);
+
   return (
     <header id="header" className="header fixed-top d-flex align-items-center">
       <div className="d-flex align-items-center justify-content-between">
@@ -9,11 +36,14 @@ const AdminHeader = () => {
           <Image src="/assets/img/logo.png" alt="" width={40} height={50} />
           <span className="d-none d-lg-block">Thinkepic</span>
         </a>
-        <i className="bi bi-list toggle-sidebar-btn"></i>
+        <i
+          className="bi bi-list toggle-sidebar-btn"
+          onClick={tampilkanToggleSidebar}
+        ></i>
       </div>
       {/* <!-- End Logo --> */}
 
-      <div className="search-bar">
+      {/* <div className="search-bar">
         <form
           className="search-form d-flex align-items-center"
           method="POST"
@@ -29,16 +59,19 @@ const AdminHeader = () => {
             <i className="bi bi-search"></i>
           </button>
         </form>
-      </div>
+      </div> */}
       {/* <!-- End Search Bar --> */}
 
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
-          <li className="nav-item d-block d-lg-none">
-            <a className="nav-link nav-icon search-bar-toggle " href="#">
+          {/* <li className="nav-item d-block d-lg-none">
+            <a
+              className="nav-link nav-icon search-bar-toggle "
+              href="#mysearch"
+            >
               <i className="bi bi-search"></i>
             </a>
-          </li>
+          </li> */}
           {/* <!-- End Search Icon--> */}
 
           <li className="nav-item dropdown">
@@ -121,15 +154,15 @@ const AdminHeader = () => {
                 className="rounded-circle"
               />
               <span className="d-none d-md-block dropdown-toggle ps-2">
-                K. Anderson
+                Luthfi
               </span>
             </a>
             {/* <!-- End Profile Iamge Icon --> */}
 
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li className="dropdown-header">
-                <h6>Kevin Anderson</h6>
-                <span>Web Designer</span>
+                <h6>Luthfi-dev</h6>
+                <span>Fullstack</span>
               </li>
               <li>
                 <hr className="dropdown-divider" />

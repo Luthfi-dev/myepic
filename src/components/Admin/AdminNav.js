@@ -4,7 +4,7 @@ import Link from "next/link";
 const AdminNav = () => {
   return (
     <>
-      <aside id="sidebar" className="sidebar">
+      <aside id="sidebar" className="sidebar" style={{ zIndex: "999" }}>
         <ul className="sidebar-nav" id="sidebar-nav">
           <li className="nav-item">
             <Link href="/admin" legacyBehavior>
@@ -35,6 +35,20 @@ const AdminNav = () => {
               className="nav-content collapse "
               data-bs-parent="#sidebar-nav"
             >
+              <li>
+                <Link href="/admin/data-posting" legacyBehavior>
+                  <a>
+                    <span>
+                      <i
+                        className="ri-file-list-3-fill"
+                        style={{ fontSize: "12pt" }}
+                      ></i>{" "}
+                      Semua Artikel
+                    </span>
+                  </a>
+                </Link>
+              </li>
+
               <li>
                 <Link href="/admin/posting" legacyBehavior>
                   <a>
