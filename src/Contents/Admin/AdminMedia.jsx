@@ -56,7 +56,7 @@ const AdminContent = () => {
     formData.append('user_id', '1');
 
     try {
-      const response = await fetch('${linkApi}', {
+      const response = await fetch(linkApi, {
         method: 'POST',
         body: formData,
       });

@@ -311,7 +311,7 @@ const MyForm = () => {
         style={{
           position: "sticky",
           top: "60px",
-          zIndex: "99999",
+          zIndex: "99",
           paddingTop: "10px",
           marginRight: "-0",
           marginLeft: "0px",

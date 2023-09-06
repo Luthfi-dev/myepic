@@ -7,6 +7,8 @@ import Link from "next/link";
 
 const AdminContent = () => {
     const [dataAll, setDataAll] = useState([]);
+    const [dataAllActivity, setDataAllActivity] = useState([]);
+
 
    async function fetchData() {
     try {
@@ -23,16 +25,42 @@ const AdminContent = () => {
       // Handle kesalahan sesuai kebutuhan Anda
     }
   }
+
+  // data untuk log activity
+  async function fetchDataActivity() {
+    try {
+      const response = await axios.get(
+        `${artikelPageApi}?jumlah=10`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data;
+      const postinganTeratas = data.data;
+      setDataAllActivity(postinganTeratas);
+    } catch (error) {
+      console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+      // Handle kesalahan sesuai kebutuhan Anda
+    }
+  }
   
   useEffect(() => {
     fetchData();
-console.log(dataAll);
-  }, [dataAll]);
+    fetchDataActivity();
+console.log(dataAll,dataAllActivity);
+  }, []);
+
+  function filterHTMLTags(text) {
+  // Menghilangkan tag HTML menggunakan regex
+  return text.replace(/<\/?[^>]+(>|$)/g, "");
+}
 
   // Fungsi untuk menghasilkan elemen-elemen JSX dari dataAll
 const renderDataAll = (dataAll) => {
   return dataAll.map((item, index) => {
-    const { media, judul, isi } = item;
+    const { id,media, judul, isi } = item;
 
     // Mendapatkan ekstensi file foto dari nama file
     const fotoEkstensi = media ? media.split(".").pop().toLowerCase() : "";
@@ -42,13 +70,14 @@ const renderDataAll = (dataAll) => {
     
     return (
       <div className="post-item clearfix" key={index}>
+        <Link href={`admin/view/${id}`}>
         {media ? (
           // Jika media terisi, lakukan pengecekan jenis media
           isImage ? (
             // Jika ekstensi adalah gambar, tampilkan gambar dari publicApi
             <Image
               width={100}
-              height={50}
+              height={80}
               objectFit="contain"
               src={`${publicApi}/${media}`}
               alt="foto thunbnail"
@@ -57,7 +86,7 @@ const renderDataAll = (dataAll) => {
             // Jika ekstensi bukan gambar, tampilkan thumbnail video dari path yang sesuai
             <Image
               width={100}
-              height={50}
+              height={80}
               objectFit="contain"
               src={`${publicApi}/default/thum_video.png`}
               alt="video  thunbnail"
@@ -74,18 +103,33 @@ const renderDataAll = (dataAll) => {
           />
         )}
         <h4>
-          <a href="#">{judul}</a>
+        {judul}
         </h4>
         <p className="text-app">
           {isi.length > 50
-            ? `${isi.substring(0, 50)}...`
+            ? `${filterHTMLTags(isi).substring(0, 50)}...`
             : isi}
         </p>
+        </Link>
       </div>
+      
     );
   });
 };
 
+ // Fungsi untuk menampilkan satu satu data aktivity
+const renderDataAllActivity = (dataAllActivity) => {
+ // Lakukan perulangan dengan nomor indeks
+  dataAllActivity.forEach((activity, index) => {
+    // Anda dapat mengakses properti status dan nomor indeks di sini
+    const status = activity.status;
+    
+    // Lakukan sesuatu dengan status dan nomor indeks, misalnya mencetaknya ke konsol
+    console.log(`Status ke-${index}: ${status}`);
+  });
+};
+
+renderDataAllActivity(dataAllActivity)
 
   return (
     <>
@@ -192,7 +236,7 @@ const renderDataAll = (dataAll) => {
         <div className="row">
           <div className="col-xxl-8 col-md-8">
             <div className="card p-2">
-              <h5 className="card-title">Postingan <span>| Teratas</span></h5>
+              <h5 className="card-title p-2">Postingan <span>| Terbaru</span></h5>
 
               <div className="news m-2">
                 {renderDataAll(dataAll)}
@@ -200,7 +244,7 @@ const renderDataAll = (dataAll) => {
 
               <div className="row mt-3">
                 <center>
-                  <button className="btn btn-app btn-sm">semua artikel <i className="bi bi-arrow-right"></i></button>
+                  <Link href="/admin/data-posting"><button className="btn btn-app btn-sm">semua artikel <i className="bi bi-arrow-right"></i></button></Link>
                 </center>
               </div>
               {/* <!-- End sidebar recent posts--> */}
@@ -209,7 +253,7 @@ const renderDataAll = (dataAll) => {
           </div>
           <div className="col-xxl-4 col-md-4">
             <div className="card">
-            <div className="filter">
+            {/* <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
               <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li className="dropdown-header text-start">
@@ -220,60 +264,60 @@ const renderDataAll = (dataAll) => {
                 <li><a className="dropdown-item" href="#">This ff</a></li>
                 <li><a className="dropdown-item" href="#">This Year</a></li>
               </ul>
-            </div>
+            </div> */}
 
             <div className="card-body">
-              <h5 className="card-title">Recent Activity <span>| Today</span></h5>
+              <h5 className="card-title">Aktivitas <span>| Terbaru</span></h5>
 
               <div className="activity">
 
-                <div className="activity-item d-flex">
-                  <div className="activite-label">32 min</div>
-                  <i className="bi bi-circle-fill activity-badge text-success align-self-start"></i>
-                  <div className="activity-content">
-                    Quia quae rerum <a href="#" className="fw-bold text-dark">explicabo officiis</a> beatae
-                  </div>
-                </div>
+                {dataAllActivity.map((activity, index) => {
+                  const status = activity.status;
+                  const createdTime = new Date(activity.created_at); // Parsing waktu dari string ISO 8601
+                  const currentTime = new Date(); // Waktu saat ini
+                  const diffInMilliseconds = currentTime - createdTime; // Selisih waktu dalam milidetik
+                  const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60)); // Selisih waktu dalam menit
+                  const diffInHours = Math.floor(diffInMinutes / 60); // Selisih waktu dalam jam
+                  const diffInDays = Math.floor(diffInHours / 24); // Selisih waktu dalam hari
+                  
+                  let timeAgoText;
+                  if (diffInDays === 0) {
+                    // Kurang dari 1 hari
+                    if (diffInHours === 0) {
+                      // Kurang dari 1 jam
+                      timeAgoText = `${diffInMinutes} minute ago`;
+                    } else {
+                      timeAgoText = `${diffInHours} hour ago`;
+                    }
+                  } else if (diffInDays === 1) {
+                    timeAgoText = '1 day ago';
+                  } else {
+                    timeAgoText = `${diffInDays} days ago`;
+                  }
 
-                <div className="activity-item d-flex">
-                  <div className="activite-label">56 min</div>
-                  <i className="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
-                  <div className="activity-content">
-                    Voluptatem blanditiis blanditiis eveniet
-                  </div>
-                </div>
+                  if (status === "draf") {
+                    return (
+                      <div key={index} className="activity-item d-flex">
+                        <div className="activite-label">{timeAgoText}</div>
+                        <i className="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                        <div className="activity-content">
+                          Posting artikel baru <a href="#" className="fw-bold text-dark">sebagai Draf</a>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={index} className="activity-item d-flex">
+                        <div className="activite-label">{timeAgoText}</div>
+                        <i className="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
+                        <div className="activity-content">
+                          Posting artikel baru <a href="#" className="fw-bold text-dark">Dalam proses verifikasi</a>
+                        </div>
+                      </div>
+                    );
+                  }
+                })}
 
-                <div className="activity-item d-flex">
-                  <div className="activite-label">2 hrs</div>
-                  <i className="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
-                  <div className="activity-content">
-                    Voluptates corrupti molestias voluptatem
-                  </div>
-                </div>
-
-                <div className="activity-item d-flex">
-                  <div className="activite-label">1 day</div>
-                  <i className="bi bi-circle-fill activity-badge text-info align-self-start"></i>
-                  <div className="activity-content">
-                    Tempore autem saepe <a href="#" className="fw-bold text-dark">occaecati voluptatem</a> tempore
-                  </div>
-                </div>
-
-                <div className="activity-item d-flex">
-                  <div className="activite-label">2 days</div>
-                  <i className="bi bi-circle-fill activity-badge text-warning align-self-start"></i>
-                  <div className="activity-content">
-                    Est sit eum reiciendis exercitationem
-                  </div>
-                </div>
-
-                <div className="activity-item d-flex">
-                  <div className="activite-label">4 weeks</div>
-                  <i className="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
-                  <div className="activity-content">
-                    Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-                  </div>
-                </div>
 
               </div>
 
