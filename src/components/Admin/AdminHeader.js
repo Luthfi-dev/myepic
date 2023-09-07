@@ -30,7 +30,11 @@ const AdminHeader = () => {
   }, [isSidebarOpen]);
 
   return (
-    <header id="header" className="header fixed-top d-flex align-items-center">
+    <header
+      id="header"
+      className="header fixed-top d-flex align-items-center"
+      style={{ zIndex: "9999" }}
+    >
       <div className="d-flex align-items-center justify-content-between">
         <a href="index.html" className="logo d-flex align-items-center">
           <Image src="/assets/img/logo.png" alt="" width={40} height={50} />

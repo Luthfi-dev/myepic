@@ -171,10 +171,15 @@ const MyForm = () => {
       }, 3000);
       // END DRAF INFO
 
+      // Update keterangan Draf
+      document.querySelector("#ketDraf").innerHTML = "Tersimpan";
+
       const adaYangSama = hasilData.some((item) => item.id === formData.id);
       console.log("samaa", adaYangSama);
 
       if (adaYangSama) {
+        // Update keterangan public
+        document.querySelector("#ketPublic").innerHTML = "Private (Draf)";
         // sebelum di put cek dulu status artikelnya
         const responseStatus = await axios.get(
           `${artikelPageApi}?id=${formData.id}`,
@@ -240,6 +245,9 @@ const MyForm = () => {
     e.preventDefault();
     const tidakFokus = await tidaFokuslagi();
     console.log(tidakFokus);
+
+    // update ket public
+    document.querySelector("#ketPublic").innerHTML = "Private (OnReview)";
 
     // Contoh penggunaan
     const dataToSend = {
@@ -530,10 +538,10 @@ const MyForm = () => {
                   >
                     <div className="accordion-body">
                       <div className="container mt-2">
-                        Draf : <b>Tersimpan</b>
+                        Draf : <b id="ketDraf">Belum Tersimpan</b>
                       </div>
                       <div className="container mt-2">
-                        Visibilitas : <b>Private</b>
+                        Visibilitas : <b id="ketPublic">Private</b>
                       </div>
                     </div>
                   </div>

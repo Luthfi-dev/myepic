@@ -1,9 +1,16 @@
 import React from "react";
 import { publicApi } from "../../utils/globals";
 import Image from "next/image";
-import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const HomeIndex = () => {
+  const router = useRouter();
+
+  function linkKe(link) {
+    router.push(link);
+  }
+
   return (
     <>
       <Image
@@ -13,6 +20,17 @@ const HomeIndex = () => {
         height={300}
         layout="responsive"
       />
+      <div className="row mt-3">
+        <center>
+          <button
+            className="btn btn-app"
+            style={{ zIndex: "99", width: "200px", marginTop: "-200px" }}
+            onClick={() => linkKe("/admin")}
+          >
+            Dashboard Admin
+          </button>
+        </center>
+      </div>
     </>
   );
 };

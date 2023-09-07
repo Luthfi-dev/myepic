@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { artikelPageApi, publicApi } from "../../../utils/globals";
+import { artikelApi, artikelPageApi, publicApi } from "../../../utils/globals";
 import Link from "next/link";
 
 const DataPosting = () => {
@@ -41,6 +41,24 @@ const DataPosting = () => {
     }
   };
 
+  // hapus artikel
+const hapusArtikel = async (artikelId) => {
+    try {
+      const response = await fetch(`${artikelApi}/${artikelId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        console.log('Artikel berhasil dihapus.');
+        fetchData();
+      } else {
+        console.error('Gagal menghapus Artikel.');
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+    }
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -55,7 +73,7 @@ const DataPosting = () => {
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, activeTab, searchText]); // Tambahkan searchText sebagai dependensi useEffect
+  }, [currentPage, activeTab, searchText]);
 
   function filterHTMLTags(text) {
     return text.replace(/<\/?[^>]+(>|$)/g, "");
@@ -112,17 +130,17 @@ const DataPosting = () => {
               <Link className="btn btn-outline-warning d-none d-lg-inline" href={`/admin/posting/edit?id=${id}`}>
                 <i className="bi bi-pencil-square"></i>
               </Link>
-              <Link className="btn btn-outline-danger d-none d-lg-inline" href={`/admin/posting/delete/${id}`} style={{marginLeft: "5px"}}>
+              <button className="btn btn-outline-danger d-none d-lg-inline" style={{marginLeft: "5px"}} onClick={() => hapusArtikel(id)}>
                 <i className="bi bi-trash"></i>
-              </Link>
+              </button>
             </div>
             <div className="col-lg-1 mt-3 mb-2">
               <Link className="btn btn-outline-warning btn-sm d-inline d-lg-none" href={`/admin/posting/edit?id=${id}`}>
                 <i className="bi bi-pencil-square"></i>
               </Link>
-              <Link className="btn btn-outline-danger btn-sm d-inline d-lg-none" href={`/admin/posting/delete/${id}`} style={{marginLeft: "5px"}}>
+              <button className="btn btn-outline-danger btn-sm d-inline d-lg-none" style={{marginLeft: "5px"}} onClick={() => hapusArtikel(id)}>
                 <i className="bi bi-trash"></i>
-              </Link>
+              </button>
             </div>
           <hr />
             </div>
