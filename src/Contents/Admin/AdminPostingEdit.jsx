@@ -8,7 +8,7 @@ const AdminPosting = () => {
           <nav>
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
-                <a href="/">Home</a>
+                <Link href="/">Home</Link>
               </li>
               <li className="breadcrumb-item active">Posting</li>
             </ol>
