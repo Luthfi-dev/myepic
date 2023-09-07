@@ -1,5 +1,6 @@
 import React from "react";
 import AdminContentProsesEdit from "./Proses/AdminContentProsesEdit";
+import Link from "next/link";
 
 const AdminPosting = () => {
     return (
