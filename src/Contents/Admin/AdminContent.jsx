@@ -49,7 +49,7 @@ const AdminContent = () => {
   useEffect(() => {
     fetchData();
     fetchDataActivity();
-console.log(dataAll,dataAllActivity);
+
   }, []);
 
   function filterHTMLTags(text) {

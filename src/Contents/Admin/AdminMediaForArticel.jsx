@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { linkApi, publicApi } from '../../../utils/globals';
+import Link from 'next/link';
 
 const AdminContent = ({kData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
@@ -112,13 +113,14 @@ const renderPagination = () => {
   const currentPageIndex = currentPage - 1;
 
   const renderPageButton = (pageNumber) => (
-    <button
+    <Link
+    href="#"
       key={pageNumber}
       onClick={() => handlePageChange(pageNumber)}
       className={`page-link rounded-circle ${currentPage === pageNumber ? 'active' : ''}`}
     >
       {pageNumber}
-    </button>
+    </Link>
   );
 
   return (
@@ -127,7 +129,7 @@ const renderPagination = () => {
         <ul className="pagination">
           {currentPage > 1 && (
             <>
-              <li className="btn btn-light bordered" onClick={() => handlePageChange(1)}>previous</li>
+              <Link href="#" className="btn btn-light bordered" onClick={() => handlePageChange(1)}>previous</Link>
               {currentPage > 2 && <span className="ellipsis">...</span>}
             </>
           )}
@@ -142,14 +144,13 @@ const renderPagination = () => {
           {currentPage < totalPages - 1 && renderPageButton(totalPages)}
 
           {currentPage < totalPages && (
-            <li className="btn btn-light bordered" onClick={() => handlePageChange(totalPages)}>Next</li>
+            <Link href="#" className="btn btn-light bordered" onClick={() => handlePageChange(totalPages)}>Next</Link>
           )}
         </ul>
       </nav>
     </>
   );
 };
-
 
 
   return (
