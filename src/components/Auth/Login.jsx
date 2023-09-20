@@ -268,7 +268,7 @@ const handleSubmit = async (event) => {
                 width={50}
                 height={50}
                 objectFit="cover"
-                alt="icon logo gmail"
+                alt="icon logo microsoft"
                 title="Sig Up with Microsoft"
                 style={{ width: "50px" }}
               />
@@ -297,7 +297,7 @@ const handleSubmit = async (event) => {
                 width={50}
                 height={50}
                 objectFit="cover"
-                alt="icon logo gmail"
+                alt="icon logo gmail sign in"
                 title="Sig Up with Gmail"
                 style={{ width: "50px" }}
               />
@@ -307,7 +307,7 @@ const handleSubmit = async (event) => {
                 width={50}
                 height={50}
                 objectFit="cover"
-                alt="icon logo gmail"
+                alt="icon logo gmail  sign in"
                 title="Sig Up with Microsoft"
                 style={{ width: "50px" }}
               />
@@ -330,14 +330,15 @@ const handleSubmit = async (event) => {
           </form>
         </div>
         <div className="switch" id="switch-cnt">
-          <img className="switch__circle" src="/assets/svg/illustrasi-1.svg" />
+          <img className="switch__circle" src="/assets/svg/illustrasi-1.svg" alt="illustrasi login" />
           <img
             className="switch__circle switch__circle--t"
             src="/assets/svg/illustrasi-2.svg"
             style={{ margin: "90px", marginLeft: "-170px" }}
+            alt="illustrasi login2"
           />
           <div className="switch__container" id="switch-c1">
-            <img className="" width={150} src="/assets/svg/bg-1.svg" />
+            <img className="" width={150} src="/assets/svg/bg-1.svg" alt="illustrasi 3" />
             <h2 className="switch__title title">Welcome Back !</h2>
             <p className="switch__description description">
               To stay connected with us, kindly log in using your unique
@@ -350,7 +351,7 @@ const handleSubmit = async (event) => {
           <div className="switch__container is-hidden" id="switch-c2">
             <h2 className="switch__title title">
               {" "}
-              <img width={150} />
+              <img className="" width={150} src="/assets/svg/bg-1.svg" alt="illustrasi 4" />
             </h2>
             <p className="switch__description description">
               Unlock access to our services by providing your personal details.
