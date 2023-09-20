@@ -9,6 +9,7 @@ const FileUploadCard = ({ formData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+
   const openModal = () => {
     setShowModal(true);
   };
@@ -39,15 +40,14 @@ const FileUploadCard = ({ formData }) => {
         )}
       </label>
       {selectedFile && (
-        <div className="selected-image">
+        <div className="selected-image" style={{height:"300px"}}>
         {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
           // Jika formData.media adalah gambar (contoh: .jpg atau .png)
           <Image
             src={`${publicApi}/${formData.media}`}
             alt="select media for content"
-            width={300}
-            height={300}
-            objectFit="contain"
+            layout="fill"
+            style={{borderRadius:"10px"}}
           />
         ) : formData.media.endsWith('.mp4') ? (
           // Jika formData.media adalah video (contoh: .mp4)
@@ -75,7 +75,7 @@ const FileUploadCard = ({ formData }) => {
 
       )}
 
-      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"999999999"}}>
+      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"9999"}}>
         <Modal.Header closeButton>
           <Modal.Title>Select Media</Modal.Title>
         </Modal.Header>

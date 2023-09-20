@@ -94,7 +94,7 @@ const UserNav = () => {
           {/* <!-- End Profile Page Nav --> */}
 
           <li className="nav-item">
-            <Link href="#" legacyBehavior>
+            <Link href="/auth/re-login" legacyBehavior>
               <a className="nav-link collapsed">
                 <i className="bi bi-box-arrow-in-right"></i>
                 <span>Login</span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { linkApi, publicApi } from '../../../utils/globals';
 import Link from 'next/link';
+import configureAxios from "../../../pages/axios-config";
 
 const AdminContent = ({kData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
@@ -12,6 +13,8 @@ const AdminContent = ({kData, modal}) => {
   const [totalMedia, setTotalMedia] = useState(0);
   const [dataAll, setDataAll] = useState([]);
 
+  const fifiAxios = configureAxios();
+
   const handleMediaClick = (imageName) => {
     kData.media = imageName;
     modal(false);
@@ -20,22 +23,28 @@ const AdminContent = ({kData, modal}) => {
 
   console.log(publicApi);
     // GET DATA API
-  const fetchData = async () => {
+const fetchData = async () => {
+  try {
     let mediaType = activeTab === 'image' ? 'image' : 'video';
 
-    const countResponse = await fetch(`${linkApi}?page=${currentPage}&type=${mediaType}`);
-    const countData = await countResponse.json();
+    // Mengambil data total
+    const countResponse = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const countData = countResponse.data;
     const totalCount = countData.total;
-
     setTotalMedia(totalCount);
 
-    const response = await fetch(`${linkApi}?page=${currentPage}&type=${mediaType}`);
-    const dataAmbil = await response.json();
+    // Mengambil data keseluruhan
+    const response = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const dataAmbil = response.data; // Menggunakan variabel 'response' untuk mengambil data, bukan 'countResponse'
+    
+    // Set data ke state
     setDataAll(dataAmbil.data);
-    console.log(response,dataAmbil.data)
-
+    
+    console.log("Data yang diambil:", dataAmbil.data,"total media", totalMedia);
+  } catch (error) {
+    console.error('Terjadi kesalahan:', error);
+  }
 };
-
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -65,38 +74,38 @@ const AdminContent = ({kData, modal}) => {
     formData.append('user_id', '1');
 
     try {
-      const response = await fetch(`${linkApi}`, {
-        method: 'POST',
-        body: formData,
-      });
+    const response = await fifiAxios.post(`${linkApi}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Tentukan tipe konten
+      },
+    });
 
-      if (response.ok) {
-        alert('Gambar berhasil diunggah ke API');
-        fetchData();
+      if (response.status === 200) { // Ubah dari response.ok menjadi response.status
+        alert('Media berhasil diunggah');
+        fetchData(); // Pastikan bahwa fetchData() bekerja dengan benar untuk memperbarui data.
       } else {
-        alert('Terjadi kesalahan saat mengunggah gambar');
+        alert('Terjadi kesalahan saat mengunggah media');
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
+      alert('Terjadi kesalahan saat mengunggah media');
     }
-  };
+}
 
   const deleteMedia = async (mediaId) => {
-    try {
-      const response = await fetch(`${linkApi}/${mediaId}`, {
-        method: 'DELETE',
-      });
+  try {
+    const response = await fifiAxios.delete(`${linkApi}/${mediaId}`);
 
-      if (response.ok) {
-        console.log('Media berhasil dihapus.');
-        fetchData();
-      } else {
-        console.error('Gagal menghapus media.');
-      }
-    } catch (error) {
-      console.error('Terjadi kesalahan:', error);
+    if (response.status === 200 || response.status === 204) {
+      console.log('Media berhasil dihapus.');
+      fetchData(); // Anda mungkin perlu mengeksekusi fungsi fetchData() untuk memperbarui data setelah penghapusan.
+    } else {
+      console.error('Gagal menghapus media.');
     }
-  };
+  } catch (error) {
+    console.error('Terjadi kesalahan:', error);
+  }
+};
 
   useEffect(() => {
     fetchData();

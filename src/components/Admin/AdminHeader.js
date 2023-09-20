@@ -1,12 +1,73 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { notifikasiApi } from "../../../utils/globals";
+import configureAxios from "../../../pages/axios-config";
+import { DataUser } from "../DataUser";
 
 const AdminHeader = () => {
   const router = useRouter();
+  const myUser = DataUser();
+  // console.log("gggg", myUser);
+
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [totalNotifications, setTotalNotifications] = useState(0);
+
+  const fifiAxios = configureAxios();
+
+  useEffect(() => {
+    // console.log("ini stttttt");
+    const UserId = myUser !== null ? myUser.id_user : null;
+    // console.log("iddd", UserId);
+    // Fungsi untuk mengambil data dari server
+    const fetchData = async () => {
+      try {
+        if (myUser !== null) {
+          const response = await fifiAxios.get(
+            `${notifikasiApi}?user_id=${UserId}`
+          );
+          const data = response.data;
+          // console.log("ini res data header", data);
+
+          // Filter data sesuai dengan status yang diinginkan
+          const filteredData = data.filter((item) => {
+            return item.status === "ditolak" || item.status === "diterima";
+          });
+
+          // Ambil lima data teratas
+          const topFiveNotifications = filteredData.slice(0, 5);
+
+          setNotifications(topFiveNotifications);
+          setTotalNotifications(filteredData.length);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [myUser]);
+
+  function formatDateTime(dateTimeString) {
+    // Buat objek Date dari dateTimeString
+    const date = new Date(dateTimeString);
+
+    // Dapatkan komponen tanggal, bulan, tahun, jam, dan menit
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Ingat, bulan dimulai dari 0 (Januari adalah 0)
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    // Buat format jam dan tanggal yang diinginkan
+    const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+    return formattedDateTime;
+  }
 
   // Fungsi untuk menampilkan atau menyembunyikan sidebar
   function tampilkanToggleSidebar() {
@@ -36,10 +97,10 @@ const AdminHeader = () => {
       style={{ zIndex: "9999" }}
     >
       <div className="d-flex align-items-center justify-content-between">
-        <a href="index.html" className="logo d-flex align-items-center">
+        <Link href="index.html" className="logo d-flex align-items-center">
           <Image src="/assets/img/logo.png" alt="" width={40} height={50} />
           <span className="d-none d-lg-block">Thinkepic</span>
-        </a>
+        </Link>
         <i
           className="bi bi-list toggle-sidebar-btn"
           onClick={tampilkanToggleSidebar}
@@ -69,83 +130,84 @@ const AdminHeader = () => {
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
           {/* <li className="nav-item d-block d-lg-none">
-            <a
+            <Link
               className="nav-link nav-icon search-bar-toggle "
               href="#mysearch"
             >
               <i className="bi bi-search"></i>
-            </a>
+            </Link>
           </li> */}
           {/* <!-- End Search Icon--> */}
 
           <li className="nav-item dropdown">
-            <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <Link
+              className="nav-link nav-icon"
+              href="#"
+              data-bs-toggle="dropdown"
+            >
               <i className="bi bi-bell"></i>
-              <span className="badge bg-primary badge-number">4</span>
-            </a>
+              <span className="badge bg-primary badge-number">
+                {totalNotifications}
+              </span>
+            </Link>
             {/* <!-- End Notification Icon --> */}
 
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
               <li className="dropdown-header">
-                Kamu punya 3 notifikasi baru
-                <a href="#">
-                  <span className="badge rounded-pill bg-primary p-2 ms-2">
-                    View all
-                  </span>
-                </a>
-              </li>
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-
-              <li className="notification-item">
-                <i className="bi bi-exclamation-circle text-warning"></i>
-                <div>
-                  <h4>Proses</h4>
-                  <p>Postingan kamu dalam proses oleh team reviewer</p>
-                  <p>30 min. ago</p>
-                </div>
+                Kamu punya {totalNotifications} notifikasi
+                {notifications.length > 0 ? (
+                  <Link href="/super-admin/notifikasi">
+                    <span className="badge rounded-pill bg-primary p-2 ms-2">
+                      View all
+                    </span>
+                  </Link>
+                ) : (
+                  <p></p>
+                )}
               </li>
 
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-
-              <li className="notification-item">
-                <i className="bi bi-x-circle text-danger"></i>
-                <div>
-                  <h4>Ditolak</h4>
-                  <p>Postingan kamu di ditolak oleh reviewer</p>
-                  <p>1 hr. ago</p>
-                </div>
-              </li>
-
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-
-              <li className="notification-item">
-                <i className="bi bi-check-circle text-success"></i>
-                <div>
-                  <h4>Disetujui</h4>
-                  <p>Postingan kamu di setujui oleh reviewer</p>
-                  <p>2 hrs. ago</p>
-                </div>
-              </li>
+              {notifications.map((notification, index) => (
+                <li key={index}>
+                  <hr className="dropdown-divider" />
+                  <div className="notification-item">
+                    {notification.status === "ditolak" && (
+                      <i className="bi bi-x-circle text-danger"></i>
+                    )}
+                    {notification.status === "diterima" && (
+                      <i className="bi bi-check-circle text-success"></i>
+                    )}
+                    <div>
+                      <h4>Postingan {notification.status}</h4>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: notification.isi_notifikasi,
+                        }}
+                      />
+                      <p>{formatDateTime(notification.created_at)}</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
 
               <li>
                 <hr className="dropdown-divider" />
               </li>
-              <li className="dropdown-footer">
-                <a href="#">Show all notifications</a>
-              </li>
+              {notifications.length > 0 ? (
+                <li className="dropdown-footer">
+                  <Link href="/super-admin/notifikasi">
+                    Show all notifications
+                  </Link>
+                </li>
+              ) : (
+                <li></li>
+              )}
             </ul>
             {/* <!-- End Notification Dropdown Items --> */}
           </li>
           {/* <!-- End Notification Nav --> */}
 
           <li className="nav-item dropdown pe-3">
-            <a
+            <Link
               className="nav-link nav-profile d-flex align-items-center pe-0"
               href="#"
               data-bs-toggle="dropdown"
@@ -160,7 +222,7 @@ const AdminHeader = () => {
               <span className="d-none d-md-block dropdown-toggle ps-2">
                 Luthfi
               </span>
-            </a>
+            </Link>
             {/* <!-- End Profile Iamge Icon --> */}
 
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
@@ -173,49 +235,52 @@ const AdminHeader = () => {
               </li>
 
               <li>
-                <a
+                <Link
                   className="dropdown-item d-flex align-items-center"
                   href="users-profile.html"
                 >
                   <i className="bi bi-person"></i>
                   <span>My Profile</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
 
               <li>
-                <a
+                <Link
                   className="dropdown-item d-flex align-items-center"
                   href="users-profile.html"
                 >
                   <i className="bi bi-gear"></i>
                   <span>Account Settings</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
 
               <li>
-                <a
+                <Link
                   className="dropdown-item d-flex align-items-center"
                   href="pages-faq.html"
                 >
                   <i className="bi bi-question-circle"></i>
                   <span>Need Help?</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
 
               <li>
-                <a className="dropdown-item d-flex align-items-center" href="#">
+                <Link
+                  className="dropdown-item d-flex align-items-center"
+                  href="#"
+                >
                   <i className="bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
-                </a>
+                </Link>
               </li>
             </ul>
             {/* <!-- End Profile Dropdown Items --> */}

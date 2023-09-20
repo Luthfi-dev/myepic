@@ -4,11 +4,16 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../uploadFile";
-import { artikelApi, artikelPageApi } from "../../../../utils/globals";
+import {
+  artikelApi,
+  artikelPageApi,
+  kategoriApi,
+} from "../../../../utils/globals";
 import TagInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
-
 import dynamic from "next/dynamic";
+import configureAxios from "../../../../pages/axios-config";
+import { DataUser } from "@/components/DataUser";
 
 const modules = {
   toolbar: [
@@ -35,6 +40,10 @@ const MyForm = () => {
   const [addCardClass, setAddCardClass] = useState(false);
   const [tags, setTags] = useState([]); // State untuk menyimpan tags
 
+  const fifiAxios = configureAxios();
+  const myUser = DataUser();
+  const UserId = myUser !== null ? myUser.id_user : null;
+
   useEffect(() => {
     // Fungsi untuk menangani peristiwa scroll
     const handleScroll = () => {
@@ -57,6 +66,7 @@ const MyForm = () => {
   const [formData, setFormData] = useState({
     id: uuidv4(),
     judul: "",
+    type_konten: "",
     kategori: "",
     media: "",
     tags: [],
@@ -69,7 +79,7 @@ const MyForm = () => {
   // Fungsi untuk mengambil data dari API berdasarkan judul
   async function fetchDataFromApi(judul) {
     try {
-      const response = await axios.get(artikelApi);
+      const response = await fifiAxios.get(artikelApi);
       const data = response.data;
 
       // Mengumpulkan semua slug dari data API ke dalam array
@@ -114,7 +124,7 @@ const MyForm = () => {
   // END BAGIAN SLUGS
 
   useEffect(() => {
-    console.log("form berubah", formData);
+    // console.log("form berubah", formData);
   }, [formData]);
 
   const handleTagsChange = (newTags) => {
@@ -123,12 +133,12 @@ const MyForm = () => {
       ...prevData,
       tags: newTags, // Perbarui formData.tags dengan nilai terbaru
     }));
-    console.log(formData.tags); // Tampilkan nilai terbaru dari tags
+    // console.log(formData.tags); // Tampilkan nilai terbaru dari tags
   };
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    console.log("Input berubah:", name, value, formData);
+    // console.log("Input berubah:", name, value, formData);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -147,17 +157,35 @@ const MyForm = () => {
 
   const handleQuillChange = (value) => {
     const i_foto = document.getElementById("n_foto");
-    console.log("Input berubah:", value, formData);
+    // console.log("Input berubah:", value, formData);
     setFormData((prevData) => ({
       ...prevData,
       quillContent: value,
     }));
   };
 
+  // bagian handle kategori
+  const [dataKategori, setDataKategori] = useState([]);
+  const ktg = async () => {
+    if (myUser !== null) {
+      try {
+        const response = await fifiAxios.get(kategoriApi);
+        const categoryData = response.data;
+        setDataKategori(categoryData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    ktg();
+  }, [myUser]);
+
   // FUNGSI onBlur
   const tidaFokuslagi = async () => {
     try {
-      const response = await axios.get(artikelApi);
+      const response = await fifiAxios.get(artikelApi);
       const hasilData = response.data;
 
       // UPDATE INFO DRAF
@@ -175,13 +203,13 @@ const MyForm = () => {
       document.querySelector("#ketDraf").innerHTML = "Tersimpan";
 
       const adaYangSama = hasilData.some((item) => item.id === formData.id);
-      console.log("samaa", adaYangSama);
+      // console.log("samaa", adaYangSama);
 
       if (adaYangSama) {
         // Update keterangan public
         document.querySelector("#ketPublic").innerHTML = "Private (Draf)";
         // sebelum di put cek dulu status artikelnya
-        const responseStatus = await axios.get(
+        const responseStatus = await fifiAxios.get(
           `${artikelPageApi}?id=${formData.id}`,
           {
             headers: {
@@ -195,15 +223,16 @@ const MyForm = () => {
         const dataToSend = {
           id: formData.id,
           judul: formData.judul,
+          type_konten: formData.type_konten,
           media: formData.media,
           kategori: formData.kategori,
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: "1",
+          user_id: UserId,
           status: dataBaruFix,
         };
-        const response = await axios.put(
+        const response = await fifiAxios.put(
           `${artikelApi}/${formData.id}`,
           dataToSend,
           {
@@ -212,27 +241,28 @@ const MyForm = () => {
             },
           }
         );
-        console.log("update", response);
+        // console.log("update", response);
         return true;
       } else {
         // Contoh penggunaan
         const dataToSend = {
           id: formData.id,
           judul: formData.judul,
+          type_konten: formData.type_konten,
           media: formData.media,
           kategori: formData.kategori,
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: "1",
+          user_id: UserId,
           status: "draf",
         };
-        const response = await axios.post(artikelApi, dataToSend, {
+        const response = await fifiAxios.post(artikelApi, dataToSend, {
           headers: {
             "Content-Type": "application/json",
           },
         });
-        console.log("post", response);
+        // console.log("post", response);
         return false;
       }
     } catch (error) {
@@ -244,7 +274,7 @@ const MyForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const tidakFokus = await tidaFokuslagi();
-    console.log(tidakFokus);
+    // console.log(tidakFokus);
 
     // update ket public
     document.querySelector("#ketPublic").innerHTML = "Private (OnReview)";
@@ -253,12 +283,13 @@ const MyForm = () => {
     const dataToSend = {
       id: formData.id,
       judul: formData.judul,
+      type_konten: formData.type_konten,
       media: formData.media,
       kategori: formData.kategori,
       isi: formData.quillContent,
       tags: `${formData.tags}`,
       slug: formData.slugg,
-      user_id: "1",
+      user_id: UserId,
       status: "proses",
     };
 
@@ -283,7 +314,7 @@ const MyForm = () => {
     // Fungsi untuk mengirim data ke API
     async function postDataToAPI(data) {
       try {
-        const response = await axios[apiMethod](link, data, {
+        const response = await fifiAxios[apiMethod](link, data, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -306,7 +337,7 @@ const MyForm = () => {
     }
 
     postDataToAPI(dataToSend);
-    console.log(dataToSend);
+    // console.log(dataToSend);
 
     // END MENYIMPAN DATA KE API
   };
@@ -350,7 +381,7 @@ const MyForm = () => {
               >
                 <i className="ri-send-plane-fill">
                   {" "}
-                  <span className="d-none-md">Publish</span>
+                  <span className="d-none-md">Submit</span>
                 </i>
               </button>
             </div>
@@ -412,7 +443,7 @@ const MyForm = () => {
         <div className="col-lg-3">
           <div className="col-xxl-12 col-md-12">
             <div className="card info-card sales-card p-2">
-              <h4>Kategori</h4>
+              <h4>Tipe Konten</h4>
               <hr />
               <div className="row">
                 <div className="col-lg-2">
@@ -420,16 +451,16 @@ const MyForm = () => {
                 </div>
                 <div className="col-lg-10">
                   <select
-                    name="kategori"
-                    id="kategori"
+                    name="type_konten"
+                    id="type_konten"
                     className="form-control"
-                    value={formData.kategori}
+                    value={formData.type_konten}
                     onChange={handleChange}
                     onBlur={tidaFokuslagi}
                   >
-                    <option>--Pilih kategori--</option>
+                    <option readOnly>--Pilih Tipe--</option>
+                    <option value="teks">Teks</option>
                     <option value="foto">Foto</option>
-                    <option value="flayer">Flayer</option>
                     <option value="video">Video</option>
                   </select>
                 </div>
@@ -507,6 +538,61 @@ const MyForm = () => {
                   >
                     <div className="accordion-body">
                       <input id="slugg" className="form-control" readOnly />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseTwo"
+                      aria-expanded="true"
+                      aria-controls="collapseTwo"
+                    >
+                      <b>Kategori</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseTwo"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <div className="row">
+                        <div className="col-lg-2">
+                          <label>Pilih</label>
+                        </div>
+                        <div className="col-lg-10">
+                          <select
+                            name="kategori"
+                            id="kategori"
+                            className="form-control"
+                            value={formData.kategori}
+                            onChange={handleChange}
+                            onBlur={tidaFokuslagi}
+                          >
+                            <option readOnly>--Pilih Kategori--</option>
+                            {dataKategori.map((item) => (
+                              <option
+                                key={item.id_kategori}
+                                value={item.nama_kategori}
+                              >
+                                {item.nama_kategori}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
