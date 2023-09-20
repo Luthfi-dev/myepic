@@ -4,33 +4,46 @@ import React, { useState, useEffect }  from "react";
 import { artikelPageApi, publicApi } from "../../../utils/globals";
 import axios from "axios";
 import Link from "next/link";
+import configureAxios from "../../../pages/axios-config";
+import { DataUser } from "@/components/DataUser";
 
 const AdminContent = () => {
     const [dataAll, setDataAll] = useState([]);
     const [dataAllActivity, setDataAllActivity] = useState([]);
+    const [jumlahProses, setJumlahProses] = useState(0);
+    const [jumlahDiterima, setJumlahDiterima] = useState(0);
+    const [jumlahDitolak, setJumlahDitolak] = useState(0);
 
+    const fifiAxios = configureAxios();
+    const myUser = DataUser();
+    const UserId = myUser !== null ? myUser.id_user : null;
 
    async function fetchData() {
-    try {
-      const response = await axios.get(`${artikelPageApi}?jumlah=5&status=proses`, {
+   if (myUser !== null) {
+       try {
+        console.log(UserId);
+      const response = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${UserId}`, {
           headers: {
             "Content-Type": "application/json",
           },
         });
+        console.log(response)
       const data = response.data;
       const postinganTeratas = data.data;
       setDataAll(postinganTeratas);
     } catch (error) {
       console.error("Terjadi kesalahan saat mengambil data dari API:", error);
-      // Handle kesalahan sesuai kebutuhan Anda
     }
+   }
   }
 
+ 
   // data untuk log activity
   async function fetchDataActivity() {
-    try {
-      const response = await axios.get(
-        `${artikelPageApi}?jumlah=10`,
+    if(myUser !== null){
+      try {
+      const response = await fifiAxios.get(
+        `${artikelPageApi}?jumlah=10&id_user=${UserId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -42,15 +55,51 @@ const AdminContent = () => {
       setDataAllActivity(postinganTeratas);
     } catch (error) {
       console.error("Terjadi kesalahan saat mengambil data dari API:", error);
-      // Handle kesalahan sesuai kebutuhan Anda
+    }
     }
   }
+
+  async function fetchDataStatus() {
+    if(myUser !== null){
+    // Fetch data for jumlahProses
+    const prosesCount = await jumlahStatus("proses");
+    setJumlahProses(prosesCount);
+
+    // Fetch data for jumlahDiterima
+    const diterimaCount = await jumlahStatus("diterima");
+    setJumlahDiterima(diterimaCount);
+
+    // Fetch data for jumlahDitolak
+    const ditolakCount = await jumlahStatus("ditolak");
+    setJumlahDitolak(ditolakCount);
+    }
+
+  }
+
+  // async function jumlahStatus(status) {
+  //   const response = await fifiAxios.get(`${artikelPageApi}?status=${status}`, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   return response.data.total;
+  // }
+
+  // fungsi untuk menampilkan status proses,diterima dan ditolak
+ async function jumlahStatus(status) {
+  const response = await fifiAxios.get(`${artikelPageApi}?status=${status}&id_user=${UserId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data.total;
+}
   
   useEffect(() => {
     fetchData();
     fetchDataActivity();
-
-  }, []);
+    fetchDataStatus();
+  }, [myUser]);
 
   function filterHTMLTags(text) {
   // Menghilangkan tag HTML menggunakan regex
@@ -108,7 +157,7 @@ const renderDataAll = (dataAll) => {
         <p className="text-app">
           {isi.length > 50
             ? `${filterHTMLTags(isi).substring(0, 50)}...`
-            : isi}
+            : filterHTMLTags(isi)}
         </p>
         </Link>
       </div>
@@ -125,7 +174,7 @@ const renderDataAllActivity = (dataAllActivity) => {
     const status = activity.status;
     
     // Lakukan sesuatu dengan status dan nomor indeks, misalnya mencetaknya ke konsol
-    console.log(`Status ke-${index}: ${status}`);
+    // console.log(`Status ke-${index}: ${status}`);
   });
 };
 
@@ -165,7 +214,7 @@ renderDataAllActivity(dataAllActivity)
                   <i className="bi bi-clock-history"></i>
                 </div>
                 <div className="ps-3">
-                  <h6>145</h6>
+                  <h6>{jumlahProses}</h6>
                   <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
                   <span className="text-muted small pt-2 ps-1">Diproses</span>
                 </div>
@@ -193,7 +242,7 @@ renderDataAllActivity(dataAllActivity)
                   <i className="bi bi-clipboard-check"></i>
                 </div>
                 <div className="ps-3">
-                  <h6>145</h6>
+                  <h6>{jumlahDiterima}</h6>
                   <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
                   <span className="text-muted small pt-2 ps-1">Diterima</span>
                 </div>
@@ -221,7 +270,7 @@ renderDataAllActivity(dataAllActivity)
                   <i className="bi bi-clipboard-x"></i>
                 </div>
                 <div className="ps-3">
-                  <h6>145</h6>
+                  <h6>{jumlahDitolak}</h6>
                   <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
                   <span className="text-muted small pt-2 ps-1">Ditolak</span>
                 </div>

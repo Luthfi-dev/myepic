@@ -4,12 +4,18 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../uploadFileEdit";
-import { artikelApi, artikelPageApi } from "../../../../utils/globals";
+import {
+  artikelApi,
+  artikelPageApi,
+  kategoriApi,
+} from "../../../../utils/globals";
 import TagInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 import { useRouter } from "next/router";
 
 import dynamic from "next/dynamic";
+import configureAxios from "../../../../pages/axios-config";
+import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
 const modules = {
   toolbar: [
@@ -34,10 +40,13 @@ const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
 
 const MyForm = () => {
   const [addCardClass, setAddCardClass] = useState(false);
-  const [tags, setTags] = useState([]); // State untuk menyimpan tags
+  const [tags, setTags] = useState([]);
+  const [dataArtikel, setDataArtikel] = useState([]);
 
   const router = useRouter();
   const { id } = router.query;
+
+  const fifiAxios = configureAxios();
 
   useEffect(() => {
     // Fungsi untuk menangani peristiwa scroll
@@ -61,6 +70,7 @@ const MyForm = () => {
   const [formData, setFormData] = useState({
     id: "",
     judul: "",
+    type_konten: "",
     kategori: "",
     media: "",
     tags: [],
@@ -75,10 +85,10 @@ const MyForm = () => {
       // Buat fungsi untuk mengambil data artikel berdasarkan ID
       const fetchArticleData = async () => {
         try {
-          const response = await axios.get(`${artikelPageApi}?id=${id}`);
+          const response = await fifiAxios.get(`${artikelPageApi}?id=${id}`);
           const articleData = response.data.data[0];
 
-          console.log(articleData);
+          setDataArtikel(articleData);
 
           // Periksa apakah properti 'tags' ada pada objek artikel sebelum memanggil 'split'
           const tags = articleData.tags ? articleData.tags.split(",") : [];
@@ -88,6 +98,7 @@ const MyForm = () => {
             ...prevFormData,
             id: articleData.id,
             judul: articleData.judul,
+            type_konten: articleData.type_konten,
             kategori: articleData.kategori,
             media: articleData.media,
             tags: tags, // Gunakan 'tags' yang sudah diperiksa
@@ -107,14 +118,14 @@ const MyForm = () => {
     }
   }, [id]);
 
-  console.log(formData);
-
+  // console.log(formData);
+  console.log("data atikel", dataArtikel);
   // BAGIAN MENGHANDLE slugs
 
   // Fungsi untuk mengambil data dari API berdasarkan judul
   async function fetchDataFromApi(judul) {
     try {
-      const response = await axios.get(artikelApi);
+      const response = await fifiAxios.get(artikelApi);
       const data = response.data;
 
       // Mengumpulkan semua slug dari data API ke dalam array
@@ -159,7 +170,7 @@ const MyForm = () => {
   // END BAGIAN SLUGS
 
   useEffect(() => {
-    console.log("form berubah", formData);
+    // console.log("form berubah", formData);
   }, [formData]);
 
   const handleTagsChange = (newTags) => {
@@ -168,12 +179,12 @@ const MyForm = () => {
       ...prevData,
       tags: newTags, // Perbarui formData.tags dengan nilai terbaru
     }));
-    console.log(formData.tags); // Tampilkan nilai terbaru dari tags
+    // console.log(formData.tags); // Tampilkan nilai terbaru dari tags
   };
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    console.log("Input berubah:", name, value, formData);
+    // console.log("Input berubah:", name, value, formData);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -192,12 +203,28 @@ const MyForm = () => {
 
   const handleQuillChange = (value) => {
     const i_foto = document.getElementById("n_foto");
-    console.log("Input berubah:", value, formData);
+    // console.log("Input berubah:", value, formData);
     setFormData((prevData) => ({
       ...prevData,
       quillContent: value,
     }));
   };
+
+  // bagian handle kategori
+  const [dataKategori, setDataKategori] = useState([]);
+  const ktg = async () => {
+    try {
+      const response = await fifiAxios.get(kategoriApi);
+      const categoryData = response.data;
+      setDataKategori(categoryData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    ktg();
+  }, []);
 
   // fungsi baru untuk gambar edit
   const handleImageChange = (newImage) => {
@@ -217,7 +244,7 @@ const MyForm = () => {
   // FUNGSI onBlur
   const tidaFokuslagi = async () => {
     try {
-      const response = await axios.get(artikelApi);
+      const response = await fifiAxios.get(artikelApi);
       const hasilData = response.data;
 
       // UPDATE INFO DRAF
@@ -236,7 +263,7 @@ const MyForm = () => {
 
       if (adaYangSama) {
         // sebelum di put cek dulu status artikelnya
-        const responseStatus = await axios.get(
+        const responseStatus = await fifiAxios.get(
           `${artikelPageApi}?id=${formData.id}`,
           {
             headers: {
@@ -250,15 +277,16 @@ const MyForm = () => {
         const dataToSend = {
           id: formData.id,
           judul: formData.judul,
+          type_konten: formData.type_konten,
           media: formData.media,
           kategori: formData.kategori,
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: "1",
+          user_id: dataArtikel.user_id,
           status: dataBaruFix,
         };
-        const response = await axios.put(
+        const response = await fifiAxios.put(
           `${artikelApi}/${formData.id}`,
           dataToSend,
           {
@@ -274,15 +302,16 @@ const MyForm = () => {
         const dataToSend = {
           id: formData.id,
           judul: formData.judul,
+          type_konten: formData.type_konten,
           media: formData.media,
           kategori: formData.kategori,
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: "1",
+          user_id: dataArtikel.user_id,
           status: "draf",
         };
-        const response = await axios.post(artikelApi, dataToSend, {
+        const response = await fifiAxios.post(artikelApi, dataToSend, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -305,12 +334,13 @@ const MyForm = () => {
     const dataToSend = {
       id: formData.id,
       judul: formData.judul,
+      type_konten: formData.type_konten,
       media: formData.media,
       kategori: formData.kategori,
       isi: formData.quillContent,
       tags: `${formData.tags}`,
       slug: formData.slugg,
-      user_id: "1",
+      user_id: dataArtikel.user_id,
       status: "proses",
     };
 
@@ -320,7 +350,10 @@ const MyForm = () => {
       formData.quillContent == "" ||
       formData.tags == ""
     ) {
-      alert("kolom judul, isi postingan dan tags tidak boleh kosong");
+      showDynamicAlert(
+        "kolom judul, isi postingan dan tags tidak boleh kosong",
+        "warning"
+      );
       return;
     }
 
@@ -335,17 +368,18 @@ const MyForm = () => {
     // Fungsi untuk mengirim data ke API
     async function postDataToAPI(data) {
       try {
-        const response = await axios[apiMethod](link, data, {
+        const response = await fifiAxios[apiMethod](link, data, {
           headers: {
             "Content-Type": "application/json",
           },
         });
 
         if (response.status === 200) {
-          alert(
+          showDynamicAlert(
             `Data berhasil ${
               apiMethod === "post" ? "disimpan" : "diupdate"
-            } ke API`
+            } ke API`,
+            "success"
           );
         } else {
           throw new Error("Gagal mengirim data ke API");
@@ -402,7 +436,7 @@ const MyForm = () => {
               >
                 <i className="ri-send-plane-fill">
                   {" "}
-                  <span className="d-none-md">Publish</span>
+                  <span className="d-none-md">Submit</span>
                 </i>
               </button>
             </div>
@@ -435,6 +469,7 @@ const MyForm = () => {
                   formData={formData}
                   onImageChange={handleImageChange}
                   onDeleteImage={handleImageDelete}
+                  onBlur={tidaFokuslagi}
                 />
               </div>
             </div>
@@ -469,7 +504,7 @@ const MyForm = () => {
         <div className="col-lg-3">
           <div className="col-xxl-12 col-md-12">
             <div className="card info-card sales-card p-2">
-              <h4>Kategori</h4>
+              <h4>Tipe Konten</h4>
               <hr />
               <div className="row">
                 <div className="col-lg-2">
@@ -477,17 +512,20 @@ const MyForm = () => {
                 </div>
                 <div className="col-lg-10">
                   <select
-                    name="kategori"
-                    id="kategori"
+                    name="type_konten"
+                    id="type_konten"
                     className="form-control"
-                    value={formData.kategori}
+                    value={formData.type_konten}
                     onChange={handleChange}
                     onBlur={tidaFokuslagi}
                   >
-                    <option>--Pilih kategori--</option>
-                    <option value="foto">Foto</option>
-                    <option value="flayer">Flayer</option>
-                    <option value="video">Video</option>
+                    <option readOnly>--Pilih Tipe--</option>
+                    {formData.type_konten !== "" && (
+                      <option value="teks">{formData.type_konten}</option>
+                    )}
+                    <option value="teks">teks</option>
+                    <option value="foto">foto</option>
+                    <option value="video">video</option>
                   </select>
                 </div>
               </div>
@@ -569,6 +607,61 @@ const MyForm = () => {
                         className="form-control"
                         readOnly
                       />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseTwo"
+                      aria-expanded="true"
+                      aria-controls="collapseTwo"
+                    >
+                      <b>Kategori</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseTwo"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <div className="row">
+                        <div className="col-lg-2">
+                          <label>Pilih</label>
+                        </div>
+                        <div className="col-lg-10">
+                          <select
+                            name="kategori"
+                            id="kategori"
+                            className="form-control"
+                            value={formData.kategori}
+                            onChange={handleChange}
+                            onBlur={tidaFokuslagi}
+                          >
+                            <option readOnly>--Pilih Kategori--</option>
+                            {dataKategori.map((item) => (
+                              <option
+                                key={item.id_kategori}
+                                value={item.nama_kategori}
+                              >
+                                {item.nama_kategori}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

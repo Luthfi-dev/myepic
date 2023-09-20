@@ -6,6 +6,7 @@ import SelectImage from "./AdminMediaForArticel";
 import { linkApi, publicApi } from "../../../utils/globals";
 
 const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => {
@@ -17,7 +18,7 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
   };
 
   const handleImageClick = () => {
-        setShowModal(false);
+      setSelectedFile(true);
   }
 
   return (
@@ -29,15 +30,14 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
             <label className="bg-light w-100"><b>Select file</b></label>
           </b>
         ) : (
-          <div className="selected-image">
+          <div className="selected-image" style={{height:"300px"}}>
             {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
               // Jika formData.media adalah gambar (contoh: .jpg atau .png)
               <Image
                 src={`${publicApi}/${formData.media}`}
                 alt="select media for content"
-                width={300}
-                height={300}
-                objectFit="contain"
+                layout="fill"
+                style={{borderRadius:"10px"}}
               />
             ) : formData.media.endsWith('.mp4') ? (
               // Jika formData.media adalah video (contoh: .mp4)

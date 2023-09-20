@@ -24,7 +24,7 @@ const sendMail = () => {
               Email Berhasil di verifikasi
             </button>
             <br />
-            <Link href="/auth/login" className="btn btn-app">
+            <Link href="/auth/re-login" className="btn btn-app">
               Login Sekarang
             </Link>
           </center>

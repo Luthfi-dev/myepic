@@ -2,16 +2,34 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { userApi } from "../../../utils/globals";
+import CryptoJS from 'crypto-js';
+import { cekMailApi, reqTokenApi, signupApi, userApi } from "../../../utils/globals";
+import { showDynamicAlert } from "@/Contents/showDynamicAlert";
+import { useRouter } from "next/router";
 
 const AuthLogin = () => {
+  const { cookies } = useState(null);
 
+    const setCookie = (name, value, maxAge) => {
+      document.cookie = `${name}=${value}; Max-Age=${maxAge}; Secure; SameSite=Strict; path=/`;
+    };
+
+
+const router = useRouter();
+
+  
   const [formData, setFormData] = useState({
     email: "",
     nama: "",
     password: "",
     confir_password: "",
     role: "",
+  });
+
+  const [formDataLogin, setFormDataLogin] = useState({
+    email: "",
+    nama: "",
+    role: ""
   });
 
   const handleChange = async (e) => {
@@ -23,50 +41,208 @@ const AuthLogin = () => {
     }));
   }
 
+  const handleChangeLogin = async (e) => {
+    const { name, value } = e.target;
+    console.log("Input login:", name, value, formDataLogin);
+    setFormDataLogin((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+
   useEffect(() => {
     console.log("form berubah", formData,);
-  }, [formData]);
+    console.log("form login", formDataLogin,);
+  }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSubmitLogin = async (event) => {
+  event.preventDefault();
+  try {
     // uraikan role
-    let roleName = '';
-    if (formData.role === "2") {
-      roleName = "admin";
-    } else {
-      roleName = "user";
-    }
-    // Data yang akan dikirimkan dalam permintaan POST
-    const postData = {
-      email: formData.email,
-      nama: formData.nama,
-      password: formData.password,
-      role: roleName,
-      img: '',
-      status: ''
-    };
+  let roleName = '';
+  let roleNameText = '';
+  if (formDataLogin.role === "2") {
+    roleName = "admin";
+    roleNameText = "penulis"
+  } else if (formDataLogin.role === "1") {
+    roleName = "user";
+    roleNameText = "pembaca";
+  } else {
+    showDynamicAlert("pilih dengan benar kolom sebagai", "warning");
+    return; // Menghentikan eksekusi di sini jika kondisi tidak terpenuhi
+  }
+    const postData = {"email": formDataLogin.email,"password": formDataLogin.password,"role": roleName}
+          console.log("oke")
+      // Lakukan permintaan POST ke URL
+      const response = await axios.post(reqTokenApi, postData, {
+        headers: {
+          "Content-Type": "application/json",
+        }, 
+      });
+  
+      // console.log("ini hasil data",response.data);
+      // Fungsi untuk mengenkripsi data
+      const secretKey = "020bf63cbf793694ec956cc3673306c38eb75647738ee0e857f8c7b6d37e1498fd7fc27106263e90c331542a1a36955416bfa8f4e2c40f88d881a9b07700e48a";
+      const encryptData = (data, secretKey) => {
+        const ciphertext = CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
+        return ciphertext;
+      };
 
-    console.log("data psot", postData)
+      // Fungsi untuk mendekripsi data
+      // const decryptData = (ciphertext, secretKey) => {
+      //   const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
+      //   const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      //   return decryptedData;
+      // };
+      const encryptedAccessToken = encryptData(response.data.accessToken, secretKey);
+      // const encryptedRefreshToken = encryptData(response.data.refreshToken, secretKey);
 
-    try {
-      // Lakukan permintaan POST ke URL yang sesuai
-      const response = await axios.post(userApi, postData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+    setCookie('accessTokenPic', encryptedAccessToken, 30*24*60*60*1000 );
+    if(response.status === 200){
+      if(formDataLogin.role === "2"){
+        showDynamicAlert("Login Sukses", "successTime");
+        router.push("/routes/admin");
+      } else if(formDataLogin.role === "1"){
+        showDynamicAlert("Login Sukses", "successTime");
+        router.push("/routes/user");
+      }
+    } 
 
-      // Handle respons di sini
-      console.log('Respon dari server:', response.data);
-      window.location.href = `/auth/login/send-mail?email=${formData.email}`;
+      // // Simpan access_token di localStorage
+      // localStorage.setItem('access_token_mpic', encryptedAccessToken);
+      // localStorage.setItem('refresh_token_mpic', encryptedRefreshToken);
+      
+      // console.log(localStorage.getItem('access_token_mpic'));
+      // console.log(decryptData(localStorage.getItem('access_token_mpic'), secretKey));
+      const response2 = await axios.post(reqTokenApi, postData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
     } catch (error) {
       // Handle error jika terjadi
-      console.error('Terjadi kesalahan:', error);
+      // console.error('Terjadi kesalahan:', error);
+        showDynamicAlert("Username atau password Salah, Periksa Kembali!", "error");
+    }
+  }
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  // Validasi email menggunakan regex sederhana
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailPattern.test(formData.email)) {
+    showDynamicAlert("Format email tidak valid", "warning");
+    return;
+  }
+
+  // Validasi password minimal 6 karakter
+  if (formData.password.length < 6) {
+    showDynamicAlert("Password harus minimal 6 karakter", "warning");
+    return;
+  }
+
+  // Validasi apakah password perulangan sama
+  if (formData.password !== formData.confir_password) {
+    showDynamicAlert("Pengulangan Password Tidak Sama, Periksa Kembali", "warning");
+    return;
+  }
+
+  // Validasi bahwa semua kolom tidak kosong
+  if (!formData.email || !formData.nama || !formData.password || !formData.confir_password || !formData.role) {
+    showDynamicAlert("Masih ada kolom yang belum terisi!", "warning");
+    return;
+  }
+
+  // Uraikan role
+  let roleName = '';
+  let roleNameText = '';
+  if (formData.role === "2") {
+    roleName = "admin";
+    roleNameText = "penulis"
+  } else if (formData.role === "1") {
+    roleName = "user";
+    roleNameText = "pembaca";
+  } else {
+    showDynamicAlert("Pilih dengan benar kolom sebagai", "warning");
+    return;
+  }
+
+  const DataCek = `${cekMailApi}?email=${formData.email}&role=${roleName}`;
+  console.log(DataCek);
+
+  try {
+    // Mengeksekusi permintaan GET dengan axios
+    const response = await axios.get(DataCek);
+
+    if (response.data.length > 0) {
+      showDynamicAlert(`Email sudah terdaftar sebagai ${roleNameText}. Silahkan lakukan login.`, "warning");
+    } else {
+      console.log(response.data);
+
+      // Data yang akan dikirimkan dalam permintaan POST
+      const postData = {
+        email: formData.email,
+        nama: formData.nama,
+        password: formData.password,
+        role: roleName
+      };
+
+      console.log("Data post", postData);
+
+      if(response.data.length === 0){
+        // Lakukan permintaan POST ke URL
+      const postResponse = await axios.post(signupApi, postData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response dari server:", postResponse);
+
+      // Handle respons di sini
+      if (postResponse.status === 200) {
+        // Data berhasil disimpan, lakukan tindakan yang sesuai
+        showDynamicAlert("User Berhasil di Daftarkan", "successTime");
+        window.location.href = `/auth/login/send-mail?email=${formData.email}`;
+      } else {
+        // Handle respons error dengan status lain jika diperlukan
+        console.error('Terjadi kesalahan pada server:', postResponse.data.message);
+      }
+      }
+    }
+  } catch (error) {
+    // Handle kesalahan jaringan atau lainnya
+    console.error('Terjadi kesalahan:', error);
+  }
+};
+
+
+  const checkPasswordLength = () => {
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirm_password");
+    const notifPass = document.getElementById("notif_password2");
+
+
+    if (formData.password.length < 8) {
+      passwordInput.style.border = "1px solid red";
+      notifPass.classList.add("p-2")
+      // alert("Password minimal 8 karakter");
+      notifPass.innerHTML = "Password minimal 8 karakter";
+    } else {
+      passwordInput.style.border = "1px solid #ccc";
+      notifPass.innerHTML = "";
+      notifPass.classList.remove("p-2")
+    }
+
+    // Juga periksa konfirmasi password jika diperlukan
+    if (formData.confir_password.length < 8) {
+      confirmPasswordInput.style.border = "1px solid red";
+    } else {
+      confirmPasswordInput.style.border = "1px solid #ccc";
     }
   };
-
-  
 
   return (
     <>
@@ -85,8 +261,9 @@ const AuthLogin = () => {
                 <div className="form-holder">
                 <input type="email" className="input" name="email" value={formData.email} onChange={handleChange} placeholder="Masukkan Email" />
                 <input type="text" className="input" name="nama" value={formData.nama} onChange={handleChange} placeholder="Masukkan Nama" />
-                <input type="password" className="input" name="password" value={formData.password} onChange={handleChange} placeholder="Masukkan Password" />
-                <input type="password" className="input" name="confir_password" value={formData.confir_password} onChange={handleChange} placeholder="Ulangi Password" />
+                <input type="password" className="input" name="password" id="password" value={formData.password} onChange={handleChange} placeholder="Masukkan Password" onBlur={checkPasswordLength} />
+                <span className="text-light" id="notif_password2"></span>
+                <input type="password" className="input" name="confir_password" id="confirm_password" value={formData.confir_password} onChange={handleChange} placeholder="Ulangi Password" onBlur={checkPasswordLength} />
                 <select name="role" value={formData.roll} onChange={handleChange} className="form-control">
                   <option>pilih sebagai</option>
                   <option value="1">Pembaca</option>
@@ -152,10 +329,16 @@ const AuthLogin = () => {
                     </div>
                 </center>
                 <div className="form-holder" style={{marginTop:"20px"}}>
-                    <input type="email" className="input" placeholder="Email" />
-                    <input type="password" className="input" placeholder="Password" />
+                    <input type="email" className="input" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleChangeLogin} />
+                    <input type="password" className="input" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleChangeLogin} />
+                    <select name="role" value={formDataLogin.role} onChange={handleChangeLogin} className="form__input">
+                      <option>pilih sebagai</option>
+                      <option value="1">Pembaca</option>
+                      <option value="2">Penulis</option>
+                    </select>
                 </div>
-                <button className="submit-btn rounded">Log in</button>
+                
+                <button className="submit-btn rounded" onClick={handleSubmitLogin}>Log in</button>
                    <center><Link href="/auth/reset-password" className="form__link">Forgot your password?</Link></center>
                 </div>
             </div>

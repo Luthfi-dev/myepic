@@ -2,31 +2,50 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { linkApi, publicApi } from '../../../utils/globals';
 import Link from 'next/link';
+import configureAxios from "../../../pages/axios-config";
+import { showDynamicAlert } from '../showDynamicAlert';
 
-const AdminContent = () => {
+const AdminContent = ({kData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  // const [mediaData, setMediaData] = useState({ images: [], videos: [] });
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState('image');
   const [totalMedia, setTotalMedia] = useState(0);
   const [dataAll, setDataAll] = useState([]);
 
+  const fifiAxios = configureAxios();
 
-  const fetchData = async () => {
+  const handleMediaClick = (imageName) => {
+    kData.media = imageName;
+    modal(false);
+    console.log(kData);
+  };
+
+  console.log(publicApi);
+    // GET DATA API
+const fetchData = async () => {
+  try {
     let mediaType = activeTab === 'image' ? 'image' : 'video';
 
-    const countResponse = await fetch(`${linkApi}?page=${currentPage}&type=${mediaType}`);
-    const countData = await countResponse.json();
+    // Mengambil data total
+    const countResponse = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const countData = countResponse.data;
     const totalCount = countData.total;
-
     setTotalMedia(totalCount);
 
-    const response = await fetch(`${linkApi}?page=${currentPage}&type=${mediaType}`);
-    const dataAmbil = await response.json();
+    // Mengambil data keseluruhan
+    const response = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const dataAmbil = response.data; // Menggunakan variabel 'response' untuk mengambil data, bukan 'countResponse'
+    
+    // Set data ke state
     setDataAll(dataAmbil.data);
-
+    
+    console.log("Data yang diambil:", dataAmbil.data,"total media", totalMedia);
+  } catch (error) {
+    console.error('Terjadi kesalahan:', error);
+  }
 };
-
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -56,38 +75,38 @@ const AdminContent = () => {
     formData.append('user_id', '1');
 
     try {
-      const response = await fetch(linkApi, {
-        method: 'POST',
-        body: formData,
-      });
+    const response = await fifiAxios.post(`${linkApi}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Tentukan tipe konten
+      },
+    });
 
-      if (response.ok) {
-        alert('Gambar berhasil diunggah ke API');
-        fetchData();
+      if (response.status === 200) { // Ubah dari response.ok menjadi response.status
+        showDynamicAlert('Media berhasil diunggah', 'successTime');
+        fetchData(); // Pastikan bahwa fetchData() bekerja dengan benar untuk memperbarui data.
       } else {
-        alert('Terjadi kesalahan saat mengunggah gambar');
+        alert('Terjadi kesalahan saat mengunggah media');
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
+      alert('Terjadi kesalahan saat mengunggah media');
     }
-  };
+}
 
   const deleteMedia = async (mediaId) => {
-    try {
-      const response = await fetch(`${linkApi}/${mediaId}`, {
-        method: 'DELETE',
-      });
+  try {
+    const response = await fifiAxios.delete(`${linkApi}/${mediaId}`);
 
-      if (response.ok) {
-        console.log('Media berhasil dihapus.');
-        fetchData();
-      } else {
-        console.error('Gagal menghapus media.');
-      }
-    } catch (error) {
-      console.error('Terjadi kesalahan:', error);
+    if (response.status === 200 || response.status === 204) {
+      console.log('Media berhasil dihapus.');
+      fetchData(); // Anda mungkin perlu mengeksekusi fungsi fetchData() untuk memperbarui data setelah penghapusan.
+    } else {
+      console.error('Gagal menghapus media.');
     }
-  };
+  } catch (error) {
+    console.error('Terjadi kesalahan:', error);
+  }
+};
 
   useEffect(() => {
     fetchData();
@@ -135,7 +154,7 @@ const renderPagination = () => {
           {currentPage < totalPages - 1 && renderPageButton(totalPages)}
 
           {currentPage < totalPages && (
-            <li className="btn btn-light bordered" onClick={() => handlePageChange(totalPages)}>Next</li>
+            <Link href="#" className="btn btn-light bordered" onClick={() => handlePageChange(totalPages)}>Next</Link>
           )}
         </ul>
       </nav>
@@ -144,19 +163,8 @@ const renderPagination = () => {
 };
 
 
-
   return (
     <>
-      <div className="pagetitle">
-        <nav>
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item">
-              <Link href="/">Home</Link>
-            </li>
-            <li className="breadcrumb-item active">Media</li>
-          </ol>
-        </nav>
-      </div>
       <section className="row">
         <div className="col-xxl-12 col-md-12">
           <div className="card info-card sales-card p-2">
@@ -202,7 +210,7 @@ const renderPagination = () => {
                     {dataAll.map((image) => (
                       <div key={image.id} className="col-md-3 mb-3">
                         <div className="d-flex flex-column align-items-center">
-                          <Image src={`${publicApi}/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" />
+                          <Image src={`https://ex.luth.my.id/media/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" onClick={() => handleMediaClick(image.nama)} />
                           <button onClick={() => deleteMedia(image.id)} className="btn btn-danger mt-2"><i className='bi bi-trash'></i></button>
                         </div>
                       </div>
@@ -213,12 +221,13 @@ const renderPagination = () => {
                 <div className={`tab-pane fade ${activeTab === 'video' ? 'active show' : ''}`} id="bordered-justified-profile" role="tabpanel" aria-labelledby="videos-tab">
                   <div className="row">
                     {dataAll.map((video) => (
-                      <div key={video.id} className="col-md-3 mb-3">
-                        <video controls width="250">
-                          <source src={`${publicApi}/${video.nama}`} type={video.mimetype} />
+                      <div key={video.id} className="col-md-3 mb-5">
+                        <video controls width="250" height="200">
+                          <source src={`${publicApi}/${video.nama}`} onClick={() => handleMediaClick(video.nama)} />
                           Maaf, browser Anda tidak mendukung video ini.
                         </video>
-                        <button onClick={() => deleteMedia(video.id)} className="btn btn-danger mt-2">Hapus Media</button>
+                        <br />
+                        <button onClick={() => deleteMedia(video.id)} className="btn btn-danger mt-2 btn-sm"><i className='bi bi-trash'></i> Media</button>
                       </div>
                     ))}
                   </div>

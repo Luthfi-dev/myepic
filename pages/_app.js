@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { addAccessTokenToRequest } from "./axiosAuth"; // Sesuaikan dengan path menuju file auth.js Anda
+// import fifiAxios from "./axios-config";
+import { useState } from "react";
+import jwt from "jsonwebtoken";
+import CryptoJS from "crypto-js";
 import NextNProgress from "nextjs-progressbar";
 
 import "../public/assets/vendor/bootstrap/css/bootstrap.min.css";
@@ -16,10 +19,6 @@ import "../public/assets/css/warna.css";
 import "../public/assets/custom/font/myfont.css";
 
 function MyApp({ Component, pageProps }) {
-  const router = useRouter();
-
-  console.log(addAccessTokenToRequest);
-
   return (
     <>
       <NextNProgress

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { artikelApi, artikelPageApi, publicApi } from "../../../utils/globals";
 import Link from "next/link";
+import configureAxios from "../../../pages/axios-config";
+import { DataUser } from "@/components/DataUser";
 
 const DataPosting = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -9,46 +11,48 @@ const DataPosting = () => {
   const [totalMedia, setTotalMedia] = useState(0);
   const [rawData, setRawData] = useState([]);
   const [dataAll, setDataAll] = useState([]);
-  const [searchText, setSearchText] = useState(''); // State untuk menyimpan nilai pencarian
+  const [searchText, setSearchText] = useState('');
 
+  const fifiAxios = configureAxios();
+  const myUser = DataUser();
+  const UserId = myUser !== null ? myUser.id_user : null;
+  
   const fetchData = async () => {
-    try {
-      const countResponse = await fetch(`${artikelPageApi}`);
-      const countData = await countResponse.json();
-      const totalCount = countData.total;
-      setTotalMedia(totalCount);
+      if(myUser !== null){
+          try {
+            const countResponse = await fifiAxios.get(`${artikelPageApi}`);
+            const countData = countResponse.data;
+            const totalCount = countData.total;
+            setTotalMedia(totalCount);
 
-      const response = await fetch(
-        activeTab !== 'draf'
-          ? `${artikelPageApi}?jumlah=10&page=${currentPage}&search=${searchText}`
-          : `${artikelPageApi}?status=draf&page=${currentPage}&search=${searchText}`
-      );
+            const response = await fifiAxios.get(
+              activeTab === 'draf'
+                ? `${artikelPageApi}?status=draf&page=${currentPage}&search=${searchText}&id_user=${UserId}` 
+                : `${artikelPageApi}?jumlah=10&page=${currentPage}&search=${searchText}&id_user=${UserId}`
+            );
 
-      if (!response.ok) {
-        throw new Error('Gagal mengambil data.');
+            console.log(response);
+
+            const dataAmbil = response.data;
+
+            const filteredDataAll = dataAmbil.data.filter((item) =>
+              activeTab !== 'draf' ? item.status !== 'draf' : true
+            );
+
+            setTotalMedia(dataAmbil.total);
+            setDataAll(filteredDataAll);
+          } catch (error) {
+            console.error('Terjadi kesalahan:', error);
+          }
       }
-
-      const dataAmbil = await response.json();
-
-      const filteredDataAll = dataAmbil.data.filter((item) =>
-        activeTab !== 'draf' ? item.status !== 'draf' : true
-      );
-
-      setTotalMedia(dataAmbil.total);
-      setDataAll(filteredDataAll);
-    } catch (error) {
-      console.error('Terjadi kesalahan:', error);
-    }
   };
 
   // hapus artikel
-const hapusArtikel = async (artikelId) => {
+  const hapusArtikel = async (artikelId) => {
     try {
-      const response = await fetch(`${artikelApi}/${artikelId}`, {
-        method: 'DELETE',
-      });
+      const response = await fifiAxios.delete(`${artikelApi}/${artikelId}`);
 
-      if (response.ok) {
+      if (response.status === 200) {
         console.log('Artikel berhasil dihapus.');
         fetchData();
       } else {
@@ -73,6 +77,10 @@ const hapusArtikel = async (artikelId) => {
 
   useEffect(() => {
     fetchData();
+  }, [myUser]);
+
+  useEffect(() => {
+    fetchData();
   }, [currentPage, activeTab, searchText]);
 
   function filterHTMLTags(text) {
@@ -89,7 +97,7 @@ const hapusArtikel = async (artikelId) => {
         <div className="post-item clearfix" key={index}>
           <div className="row">
             <div className="col-lg-11">
-              <Link href={`admin/view/${id}`}>
+              <Link href={`view-artikel?id=${id}`}>
             {media ? (
               isImage ? (
                 <Image
@@ -121,7 +129,7 @@ const hapusArtikel = async (artikelId) => {
             <p className="text-app">
               {isi.length > 50
                 ? `${filterHTMLTags(isi).substring(0, 50)}...`
-                : isi}
+                : filterHTMLTags(isi)}
             </p>
           </Link>
           
