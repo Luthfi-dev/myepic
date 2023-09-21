@@ -57,6 +57,7 @@ const handleClose = () => setShow(false);
     }, [id]);
 
 const UpdateArtikel = async (status) => {
+  showDynamicAlert("Loading..", "loading");
   try {
     const response = await fifiAxios.put(`${artikelApi}/status/${id}`, { "status": status });
     
