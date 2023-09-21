@@ -74,8 +74,6 @@ const MyForm = () => {
     quillContent: "",
   });
 
-  // BAGIAN MENGHANDLE slugs
-
   // Fungsi untuk mengambil data dari API berdasarkan judul
   async function fetchDataFromApi(judul) {
     try {
@@ -133,7 +131,6 @@ const MyForm = () => {
       ...prevData,
       tags: newTags, // Perbarui formData.tags dengan nilai terbaru
     }));
-    // console.log(formData.tags); // Tampilkan nilai terbaru dari tags
   };
 
   const handleChange = async (e) => {
@@ -273,6 +270,7 @@ const MyForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    showDynamicAlert("Loading..", "loading");
     const tidakFokus = await tidaFokuslagi();
     // console.log(tidakFokus);
 
@@ -418,7 +416,7 @@ const MyForm = () => {
             <div className="col-xxl-12 col-md-12">
               <div
                 className="card info-card sales-card p-1"
-                style={{ height: "550px" }}
+                style={{ height: "600px" }}
               >
                 <QuillEditor
                   modules={modules}
@@ -463,83 +461,6 @@ const MyForm = () => {
                     <option value="foto">Foto</option>
                     <option value="video">Video</option>
                   </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-xxl-12 col-md-12">
-            <div className="card info-card sales-card p-2">
-              <div className="accordion" id="accordionExample">
-                <div className="accordion-item">
-                  <h2 className="accordion-header" id="headingOne">
-                    <button
-                      className="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseOne"
-                      aria-expanded="true"
-                      aria-controls="collapseOne"
-                    >
-                      <b>Tags</b>
-                    </button>
-                  </h2>
-                  <div
-                    id="collapseOne"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingOne"
-                    data-bs-parent="#accordionExample"
-                  >
-                    <div className="accordion-body">
-                      <TagInput
-                        id="Tags"
-                        className="form-control"
-                        value={tags}
-                        onChange={handleTagsChange}
-                        onBlur={tidaFokuslagi}
-                      />
-                      <span
-                        className="text-success"
-                        style={{
-                          position: "absolute",
-                          fontSize: "8pt",
-                          marginTop: "0px",
-                        }}
-                      >
-                        <i>Tekan enter untuk add Tag</i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-xxl-12 col-md-12">
-            <div className="card info-card sales-card p-2">
-              <div className="accordion" id="accordionExample">
-                <div className="accordion-item">
-                  <h2 className="accordion-header" id="headingOne">
-                    <button
-                      className="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseTwo"
-                      aria-expanded="true"
-                      aria-controls="collapseTwo"
-                    >
-                      <b>Slug</b>
-                    </button>
-                  </h2>
-                  <div
-                    id="collapseTwo"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingOne"
-                    data-bs-parent="#accordionExample"
-                  >
-                    <div className="accordion-body">
-                      <input id="slugg" className="form-control" readOnly />
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -593,6 +514,85 @@ const MyForm = () => {
                           </select>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseOne"
+                      aria-expanded="true"
+                      aria-controls="collapseOne"
+                    >
+                      <b>Tags</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseOne"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <TagInput
+                        type="text"
+                        id="Tags"
+                        className="form-control"
+                        value={tags}
+                        onChange={handleTagsChange}
+                        onBlur={handleTagsChange}
+                      />
+                      <span
+                        className="text-success"
+                        style={{
+                          position: "absolute",
+                          fontSize: "8pt",
+                          marginTop: "0px",
+                        }}
+                      >
+                        <i>Tekan enter untuk add Tag</i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <div className="accordion" id="accordionExample">
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingOne">
+                    <button
+                      className="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseTwo"
+                      aria-expanded="true"
+                      aria-controls="collapseTwo"
+                    >
+                      <b>Slug</b>
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseTwo"
+                    className="accordion-collapse collapse show"
+                    aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div className="accordion-body">
+                      <input id="slugg" className="form-control" readOnly />
                     </div>
                   </div>
                 </div>

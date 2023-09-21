@@ -60,6 +60,7 @@ const router = useRouter();
 
   const handleSubmitLogin = async (event) => {
   event.preventDefault();
+  showDynamicAlert("Loading..","loading");
   try {
     // uraikan role
   let roleName = '';
@@ -74,6 +75,7 @@ const router = useRouter();
     showDynamicAlert("pilih dengan benar kolom sebagai", "warning");
     return; // Menghentikan eksekusi di sini jika kondisi tidak terpenuhi
   }
+        showDynamicAlert("Loading..","loading");
     const postData = {"email": formDataLogin.email,"password": formDataLogin.password,"role": roleName}
           console.log("oke")
       // Lakukan permintaan POST ke URL
@@ -132,6 +134,7 @@ const router = useRouter();
 
 const handleSubmit = async (event) => {
   event.preventDefault();
+  showDynamicAlert("Loading..","loading");
 
   // Validasi email menggunakan regex sederhana
   const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -207,7 +210,8 @@ const handleSubmit = async (event) => {
       // Handle respons di sini
       if (postResponse.status === 200) {
         // Data berhasil disimpan, lakukan tindakan yang sesuai
-        // window.location.href = `/auth/login/send-mail?email=${formData.email}`;
+        showDynamicAlert("Akun berhasil di Daftarkan", "successTime");
+        window.location.href = `/auth/login/send-mail?email=${formData.email}`;
       } else {
         // Handle respons error dengan status lain jika diperlukan
         console.error('Terjadi kesalahan pada server:', postResponse.data.message);

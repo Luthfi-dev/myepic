@@ -45,6 +45,12 @@ export const showDynamicAlert = (pesan, tipe = "info") => {
       timer: 2000, // Menutup notifikasi otomatis setelah 2 detik
       showConfirmButton: false, // Menyembunyikan tombol OK
     });
+  } else if (tipe === "loading") {
+    Swal.fire({
+      imageUrl: "/assets/svg/loading2.gif",
+      // timer: 2000, // Menutup notifikasi otomatis setelah 2 detik
+      showConfirmButton: false, // Menyembunyikan tombol OK
+    });
   } else {
     // Jika tipe pesan bukan "success", tampilkan notifikasi tanpa timer
     Swal.fire({

@@ -63,6 +63,7 @@ const fetchData = async () => {
   };
 
   const handleFileUpload = async () => {
+    showDynamicAlert("Loading..", "loading");
     if (!selectedFiles.length) {
       alert('Pilih file terlebih dahulu');
       return;
