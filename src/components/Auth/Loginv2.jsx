@@ -57,6 +57,8 @@ const router = useRouter();
 
   const handleSubmitLogin = async (event) => {
   event.preventDefault();
+  showDynamicAlert("Loading..","loading");
+
   try {
     // uraikan role
   let roleName = '';
@@ -129,6 +131,7 @@ const router = useRouter();
 
 const handleSubmit = async (event) => {
   event.preventDefault();
+  showDynamicAlert("Loading..","loading");
 
   // Validasi email menggunakan regex sederhana
   const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

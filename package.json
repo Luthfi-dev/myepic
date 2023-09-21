@@ -29,6 +29,7 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
     "react-quill": "^2.0.0",
+    "react-spinners": "^0.13.8",
     "react-tagsinput": "^3.20.3",
     "sass": "^1.66.1",
     "sweetalert2": "^11.7.28",
