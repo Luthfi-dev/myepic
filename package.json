@@ -28,6 +28,7 @@
     "react": "18.2.0",
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
     "react-quill": "^2.0.0",
     "react-spinners": "^0.13.8",
     "react-tagsinput": "^3.20.3",

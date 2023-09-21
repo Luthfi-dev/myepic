@@ -2,12 +2,21 @@
 import AuthLogin from "@/components/Auth/Login";
 import AuthLoginv2 from "@/components/Auth/Loginv2";
 import React from "react";
-import { UserLayout } from "@/components/User/UserLayout";
+import { Helmet } from "react-helmet";
 
 const PageKontak = () => {
   return (
     <div>
-      {/* desktop */}
+      <Helmet>
+        <title>Login Penulis ThinkEpic</title>
+
+        <meta
+          name="description"
+          content="Halaman login untuk para penulis/kontributor thinkepic."
+        />
+        <meta name="keywords" content="login, penulis/kontributor thinkepic" />
+      </Helmet>
+      ;{/* desktop */}
       <div className="d-none d-md-block">
         <AuthLogin />
       </div>
