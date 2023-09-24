@@ -52,6 +52,7 @@ useEffect(() => {
   fetchData();
 }, []);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 async function jumlahStatus(status) {
   if (userData && userData.id_user) {
     const response = await fifiAxios.get(`${artikelPageApi}?status=${status}&id_user=${userData.id_user}`, {
