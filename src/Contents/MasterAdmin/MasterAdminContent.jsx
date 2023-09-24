@@ -114,7 +114,7 @@ const MasterAdminContent = () => {
     fetchData();
     fetchDataActivity();
     fetchDataStatus();
-  }, [myUser]);
+  }, [myUser, fetchData, fetchDataActivity, fetchDataStatus]);
 
   function filterHTMLTags(text) {
   // Menghilangkan tag HTML menggunakan regex
