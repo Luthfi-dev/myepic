@@ -64,6 +64,12 @@ const UpdateArtikel = async (status) => {
     if (response.status === 200) {
       if (status === "diterima") {
           showDynamicAlert("Postingan Berhasil Diterima","successTime");
+          const responseNotifikasi = await fifiAxios.post(`${notifikasiApi}`, {
+                "isi_notifikasi": `Kerja Bagus, Postingan "${articles.judul}" <b> Diterima</b>`,
+                "user_id": articles.user_id,
+                "level": "admin",
+                "status": "diterima"
+            },{headers : {"Content-Type": "application/json"}});
           router.push('/master-admin/verifikasi');
       }
         // console.log(`Artikel berhasil ${status}`);

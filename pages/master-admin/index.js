@@ -2,10 +2,19 @@
 
 import React from "react";
 import Head from "next/head";
+import { useEffect } from "react";
 import { MasterAdminLayout } from "../../src/components/MasterAdmin/MasterAdminLayout";
 import MasterAdminContent from "../../src/Contents/MasterAdmin/MasterAdminContent";
+import { CheckAccessToken } from "@/components/verifHakAkses";
 
 const pageMasterAdmin = () => {
+  useEffect(() => {
+    // Memeriksa keberadaan token akses sebelum mengizinkan akses ke halaman ini
+    const hcek = CheckAccessToken("master-admin");
+    if (!hcek) {
+      return;
+    }
+  }, []);
   return (
     <>
       <Head>
