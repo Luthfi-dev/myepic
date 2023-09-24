@@ -28,7 +28,7 @@ export function UserLayout({ children }) {
       <main id="main" className="main p-0">
         {/* <!-- End Page Title --> */}
 
-        <section className="section">
+        <section className="section" style={{ paddingRight: "-0px" }}>
           {/* <!-- START CONTENT --> */}
 
           {children}

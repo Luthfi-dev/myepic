@@ -11,7 +11,7 @@ const setAccessToken = (axiosInstance, token) => {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     // Hapus header otorisasi jika token tidak ada
-    delete axiosInstance.defaults.headers.common["Authorization"];
+    // delete axiosInstance.defaults.headers.common["Authorization"];
   }
 };
 

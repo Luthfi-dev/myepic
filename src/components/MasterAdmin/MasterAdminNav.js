@@ -29,7 +29,7 @@ const MasterAdminNav = () => {
             <Link href="/master-admin/verifikasi" legacyBehavior>
               <a className="nav-link collapsed">
                 <i className="bi bi-card-checklist"></i>
-                <span>Verifikasi</span>
+                <span>Setujui</span>
               </a>
             </Link>
           </li>
@@ -122,10 +122,10 @@ const MasterAdminNav = () => {
           {/* <!-- End Profile Page Nav --> */}
 
           <li className={`nav-item ${isMenuActive("/master-admin/logout")}`}>
-            <Link href="#" legacyBehavior>
+            <Link href="/auth/logout" legacyBehavior>
               <a className="nav-link collapsed">
                 <i className="bi bi-box-arrow-in-right"></i>
-                <span>LogOut</span>
+                <span>Log Out</span>
               </a>
             </Link>
           </li>

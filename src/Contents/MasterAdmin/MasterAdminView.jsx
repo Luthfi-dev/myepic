@@ -64,6 +64,12 @@ const UpdateArtikel = async (status) => {
     if (response.status === 200) {
       if (status === "diterima") {
           showDynamicAlert("Postingan Berhasil Diterima","successTime");
+          const responseNotifikasi = await fifiAxios.post(`${notifikasiApi}`, {
+                "isi_notifikasi": `Kerja Bagus, Postingan "${articles.judul}" <b> Diterima</b>`,
+                "user_id": articles.user_id,
+                "level": "admin",
+                "status": "diterima"
+            },{headers : {"Content-Type": "application/json"}});
           router.push('/master-admin/verifikasi');
       }
         // console.log(`Artikel berhasil ${status}`);
@@ -199,7 +205,7 @@ const UpdateArtikel = async (status) => {
                             {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
                              <>
                             <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
-                            <Image src={media} fluid />
+                            <Image src={media} fluid alt={`image ${articles.judul}`}/>
                             </>
                             ) : media.endsWith(".mp4") ? (
                             <>

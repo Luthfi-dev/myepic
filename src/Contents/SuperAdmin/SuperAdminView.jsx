@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState} from 'react';
 import { Container, Row, Col, Image, Button, Modal, Form } from 'react-bootstrap';
-import { artikelApi, artikelPageApi, komentarApi, notifikasiApi, publicApi } from '../../../utils/globals';
+import { artikelApi, artikelPageApi, komentarApi, notifikasiApi, publicApi, getNamaApi } from '../../../utils/globals';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import configureAxios from '../../../pages/axios-config';
@@ -13,6 +13,8 @@ const ArticlePage = () => {
  const [media, setMedia] = useState("");
  const [show, setShow] = useState(false);
 const [inputValue, setInputValue] = useState('');
+  const [namaPenulis, setNamaPenulis] = useState(null);
+  const [namaEditor, setNamaEditor] = useState(null);
  const router = useRouter();
 
  const fifiAxios = configureAxios();
@@ -103,6 +105,49 @@ const UpdateArtikel = async (status) => {
     // Tangani kesalahan jika permintaan gagal, misalnya menampilkan pesan kesalahan
   }
 };
+
+useEffect(() => {
+    // Fungsi untuk mengambil nama penulis berdasarkan id_user
+    const fetchNamaPenulis = async () => {
+      try {
+        // console.log("artikel", articles);
+        const response = await axios.get(
+          `${getNamaApi}?id=${articles.user_id}`
+        );
+        const nama = response.data[0].nama;
+        // console.log("nammmmm", nama);
+        setNamaPenulis(nama);
+      } catch (error) {
+        console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+      }
+    };
+
+    if (articles) {
+      fetchNamaPenulis();
+    }
+  }, [articles]);
+
+  
+  useEffect(() => {
+    // Fungsi untuk mengambil nama Editor berdasarkan id_user
+    const fetchNamaEditor = async () => {
+      try {
+        // console.log("artikel", articles);
+        const response = await axios.get(
+          `${getNamaApi}?id=${articles.user_id}`
+        );
+        const nama = response.data[0].nama;
+        // console.log("nammmmm", nama);
+        setNamaEditor(nama);
+      } catch (error) {
+        console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+      }
+    };
+
+    if (articles) {
+      fetchNamaEditor();
+    }
+  }, [articles]);
 
 
   const handleInputChange = (e) => {
@@ -199,7 +244,7 @@ const UpdateArtikel = async (status) => {
                             {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
                              <>
                             <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
-                            <Image src={media} fluid />
+                            <Image src={media} fluid alt={`image ${articles.judul}`} />
                             </>
                             ) : media.endsWith(".mp4") ? (
                             <>
@@ -216,21 +261,31 @@ const UpdateArtikel = async (status) => {
                         ) : (
                         <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
                         )}
-                    <p className="mt-3"><em>Penulis: Nama Penulis | Editor: Nama Editor</em></p>
+                    <p className="mt-3">
+                      <em>
+                        {media.endsWith(".jpg") ||
+                        media.endsWith(".png") ||
+                        media.endsWith(".jpeg")
+                          ? `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`
+                          : media.endsWith(".mp4")
+                          ? `Creator: ${namaPenulis} | Editor: ${namaEditor || "-"}`
+                          : `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`}
+                      </em>
+                    </p>
                     <p className="mt-3" dangerouslySetInnerHTML={{ __html: articles.isi }} />
                     <div className="mt-4">
                         <Button variant="success" className="mr-2">
-                            <Link href="whatsapp://send?text=Judul%20Artikel:%20URL_Artikel" target="_blank" className="text-white">
+                            <Link href="#" target="_blank" className="text-white">
                                 <i className="fab fa-whatsapp"></i> WhatsApp
                             </Link>
                         </Button>
                         <Button variant="primary" className="mr-2">
-                            <Link href="https://www.facebook.com/sharer/sharer.php?u=URL_Artikel" target="_blank" className="text-white">
+                            <Link href="#" target="_blank" className="text-white">
                                 <i className="fab fa-facebook"></i> Facebook
                             </Link>
                         </Button>
                         <Button variant="info" className="mr-2">
-                            <Link href="https://telegram.me/share/url?url=URL_Artikel&text=Judul%20Artikel" target="_blank" className="text-white">
+                            <Link href="#" target="_blank" className="text-white">
                                 <i className="fab fa-telegram"></i> Telegram
                             </Link>
                         </Button>

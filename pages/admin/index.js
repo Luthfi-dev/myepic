@@ -5,7 +5,19 @@ import Head from "next/head";
 import { AdminLayout } from "../../src/components/Admin/AdminLayout";
 import AdminContent from "../../src/Contents/Admin/AdminContent";
 
-const pageAdmin = () => {
+import { useEffect } from "react";
+import { CheckAccessToken } from "@/components/verifHakAkses";
+import { showDynamicAlert } from "@/Contents/showDynamicAlert";
+
+const PageAdmin = () => {
+  useEffect(() => {
+    // Memeriksa keberadaan token akses sebelum mengizinkan akses ke halaman ini
+    const hcek = CheckAccessToken("admin");
+    if (!hcek) {
+      return;
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -20,4 +32,4 @@ const pageAdmin = () => {
   );
 };
 
-export default pageAdmin;
+export default PageAdmin;

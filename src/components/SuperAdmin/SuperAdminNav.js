@@ -112,10 +112,10 @@ const SuperAdminNav = () => {
           {/* <!-- End Profile Page Nav --> */}
 
           <li className="nav-item">
-            <Link href="#" legacyBehavior>
+            <Link href="/auth/logout" legacyBehavior>
               <a className="nav-link collapsed">
                 <i className="bi bi-box-arrow-in-right"></i>
-                <span>LogOut</span>
+                <span>Log Out</span>
               </a>
             </Link>
           </li>

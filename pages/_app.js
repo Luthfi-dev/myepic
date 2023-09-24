@@ -17,6 +17,10 @@ import "../public/assets/vendor/simple-datatables/style.css";
 import "../public/assets/css/warna.css";
 // custom css
 import "../public/assets/custom/font/myfont.css";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 function MyApp({ Component, pageProps }) {
   return (

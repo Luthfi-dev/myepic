@@ -96,7 +96,7 @@ const DataPosting = () => {
       return (
         <div className="post-item clearfix" key={index}>
           <div className="row">
-            <div className="col-lg-11">
+            <div className="col-lg-10">
               <Link href={`view-artikel?id=${id}`}>
             {media ? (
               isImage ? (
@@ -133,6 +133,27 @@ const DataPosting = () => {
             </p>
           </Link>
           
+          </div>
+          <div className="col-lg-1 end-0" style={{opacity:"0.7"}}>
+            <div className="d-flex justify-content-end">
+              <span className={
+              item.status === "proses" || item.status === "pra-terima"
+                ? "btn btn-warning btn-sm"
+                : item.status === "diterima"
+                ? "btn btn-success btn-sm"
+                : item.status === "ditolak"
+                ? "btn btn-danger btn-sm"
+                : ""
+            }>
+              {item.status === "proses" || item.status === "pra-terima"
+                ? "On Review"
+                : item.status === "diterima"
+                ? "Diterima"
+                : item.status === "ditolak"
+                ? "Ditolak"
+                : ""}
+            </span>
+            </div>
           </div>
           <div className="col-lg-1 end-0">
               <Link className="btn btn-outline-warning d-none d-lg-inline" href={`/admin/posting/edit?id=${id}`}>

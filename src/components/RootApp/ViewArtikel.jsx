@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import React, { useEffect, useState} from 'react';
 import { Container, Row, Col, Image, Button, Modal, Form } from 'react-bootstrap';
-import { artikelApi, artikelPageApi, komentarApi, notifikasiApi, publicApi } from '../../../utils/globals';
+import { artikelApi, artikelPageApi, artikelUser, komentarApi, notifikasiApi, publicApi } from '../../../utils/globals';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import configureAxios from '../../../pages/axios-config';
 
 const ArticlePage = () => {
  const [addCardClass, setAddCardClass] = useState(false);
@@ -12,6 +13,10 @@ const ArticlePage = () => {
  const [show, setShow] = useState(false);
 const [inputValue, setInputValue] = useState('');
  const router = useRouter();
+
+ console.log("media",media)
+
+//  const axios = configureAxios();
 
 const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -40,7 +45,7 @@ const handleClose = () => setShow(false);
     useEffect(() => {
         // Pastikan id tidak kosong sebelum melakukan permintaan Axios
         if (id) {
-            axios.get(`${artikelPageApi}?id=${id}`)
+            axios.get(`${artikelUser}?id=${id}`)
                 .then((response) => {
                     setArticles(response.data.data[0]);
                     // console.log(response.data.data[0]);
@@ -52,63 +57,47 @@ const handleClose = () => setShow(false);
         }
     }, [id]);
 
-const UpdateArtikel = async (status) => {
-  try {
-    const response = await axios.put(`${artikelApi}/status/${id}`, { "status": status });
-    
-    if (response.status === 200) {
-        console.log(`Artikel berhasil ${status}`);
-        if (status === "ditolak") {
-            try {
-            const responseDitolak = await axios.post(`${komentarApi}`, {
-                "isi": inputValue,
-                "id_artikel": articles.id,
-                "penulis": 1,
-                "editor": 3
-            },{headers : {"Content-Type": "application/json"}});
-            // buat notif
-            const responseNotifikasi = await axios.post(`${notifikasiApi}`, {
-                "isi_notifikasi": `Postingan Kamu Ditolak ${inputValue ? 'Dengan Alasan ' : ''} <b>${inputValue}</b> Segera Perbaiki!`,
-                "user_id": 1,
-                "level": "admin"
-            },{headers : {"Content-Type": "application/json"}});
-
-            if (responseNotifikasi.status === 200) {
-                handleClose();
-                alert("Postingan Berhasil Ditolak");
-                router.push('/super-admin/verifikasi');
-            } else {
-                console.error("Gagal mengupdate artikel ditolak.");
-            }
-            } catch (error) {
-            console.error("Error saat mengupdate artikel ditolak:", error);
-            }
-        }
-
-    } else {
-      console.error(`Gagal mengupdate artikel: ${response.data.message}`);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    // Tangani kesalahan jika permintaan gagal, misalnya menampilkan pesan kesalahan
-  }
-};
-
-
-  const handleInputChange = (e) => {
-    // Mengupdate state saat nilai input berubah
-    setInputValue(e.target.value);
-    console.log(e.target.value);
-  };
-
     return (
         <>
-        <Container className='col-md-8'>
+        <Container className='col-md-12'>
             <Row className="mt-1">
                 <Col className='card pt-1'>
-                    <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
-                    <Image src={media} fluid alt={`image ${articles.judul}`}/>
-                    <p className="mt-3"><em>Penulis: Nama Penulis | Editor: Nama Editor</em></p>
+                   {media !== `${publicApi}/` ? (
+                        <>
+                            {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
+                             <>
+                            <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
+                            <Image src={media} fluid alt={`image ${articles.judul}`} />
+                            </>
+                            ) : media.endsWith(".mp4") ? (
+                            <>
+                            <video controls>
+                                <source src={media} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
+                            </>
+                            ) : (
+                            "Tipe media tidak didukung" // Tambahkan pesan kesalahan jika ekstensi tidak dikenali
+                            )}
+                        </>
+                        ) : (
+                        <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
+                        )}
+
+                    <p className="mt-3">
+                    <em>
+                        {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
+                        `Penulis: Nama Penulis | Editor: Nama Editor`
+                        ) : media.endsWith(".mp4") ? (
+                        `Creator: Nama Creator | Editor: Nama Editor`
+                        ) : (
+                        `Penulis: Nama Penulis | Editor: Nama Editor`
+                        )
+                        }
+                    </em>
+                    </p>
+
                     <p className="mt-3" dangerouslySetInnerHTML={{ __html: articles.isi }} />
                     <div className="mt-4">
                         <Button variant="success" className="mr-2">

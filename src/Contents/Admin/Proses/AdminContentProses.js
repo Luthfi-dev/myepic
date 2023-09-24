@@ -14,6 +14,7 @@ import "react-tagsinput/react-tagsinput.css";
 import dynamic from "next/dynamic";
 import configureAxios from "../../../../pages/axios-config";
 import { DataUser } from "@/components/DataUser";
+import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
 const modules = {
   toolbar: [

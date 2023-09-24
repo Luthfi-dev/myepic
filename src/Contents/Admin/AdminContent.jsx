@@ -7,7 +7,7 @@ import Link from "next/link";
 import configureAxios from "../../../pages/axios-config";
 import { DataUser } from "@/components/DataUser";
 
-const AdminContent = () => {
+const MasterAdminContent = () => {
     const [dataAll, setDataAll] = useState([]);
     const [dataAllActivity, setDataAllActivity] = useState([]);
     const [jumlahProses, setJumlahProses] = useState(0);
@@ -19,22 +19,37 @@ const AdminContent = () => {
     const UserId = myUser !== null ? myUser.id_user : null;
 
    async function fetchData() {
-   if (myUser !== null) {
-       try {
-        console.log(UserId);
-      const response = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${UserId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(response)
-      const data = response.data;
-      const postinganTeratas = data.data;
-      setDataAll(postinganTeratas);
-    } catch (error) {
-      console.error("Terjadi kesalahan saat mengambil data dari API:", error);
-    }
-   }
+      if (myUser !== null) {
+        try {
+          console.log(UserId);
+          const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${UserId}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const response2 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=pra-terima&id_user=${UserId}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const response3 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=diterima&id_user=${UserId}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          console.log(response1);
+
+          const data1 = response1.data.data;
+          const data2 = response2.data.data;
+          const data3 = response3.data.data;
+
+          const postinganTeratas = [...data1, ...data2, ...data3];
+
+          setDataAll(postinganTeratas);
+        } catch (error) {
+          console.error("Terjadi kesalahan saat mengambil data dari API:", error);
+        }
+      }
   }
 
  
@@ -348,6 +363,7 @@ renderDataAllActivity(dataAllActivity)
                     return (
                       <div key={index} className="activity-item d-flex">
                         <div className="activite-label">{timeAgoText}</div>
+                        {/* <div className="activity-label" dangerouslySetInnerHTML={{ __html: timeAgoText }}></div> */}
                         <i className="bi bi-circle-fill activity-badge text-success align-self-start"></i>
                         <div className="activity-content">
                           Posting artikel baru <a href="#" className="fw-bold text-dark">sebagai Draf</a>
@@ -379,4 +395,4 @@ renderDataAllActivity(dataAllActivity)
   );
 };
 
-export default AdminContent;
+export default MasterAdminContent;
