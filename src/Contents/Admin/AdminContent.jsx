@@ -1,149 +1,155 @@
-// pages/admin.js
 import Image from "next/image";
-import React, { useState, useEffect }  from "react";
+import React, { useState, useEffect } from "react";
 import { artikelPageApi, publicApi } from "../../../utils/globals";
-import axios from "axios";
-import Link from "next/link";
 import configureAxios from "../../../pages/axios-config";
+import Link from "next/link";
 import jwt from "jsonwebtoken";
 import CryptoJS from "crypto-js";
 
 const SuperAdminContent = () => {
-const [dataAll, setDataAll] = useState([]);
-const [dataAllActivity, setDataAllActivity] = useState([]);
-const [jumlahProses, setJumlahProses] = useState(0);
-const [jumlahDiterima, setJumlahDiterima] = useState(0);
-const [jumlahDitolak, setJumlahDitolak] = useState(0);
-const fifiAxios = configureAxios();
-const [userData, setUserData] = useState(null);
+  const [dataAll, setDataAll] = useState([]);
+  const [dataAllActivity, setDataAllActivity] = useState([]);
+  const [jumlahProses, setJumlahProses] = useState(0);
+  const [jumlahDiterima, setJumlahDiterima] = useState(0);
+  const [jumlahDitolak, setJumlahDitolak] = useState(0);
+  const fifiAxios = configureAxios();
+  const [userData, setUserData] = useState(null);
 
-useEffect(() => {
-  async function fetchData() {
-    if (typeof window !== 'undefined') {
-      const allCookies = document.cookie || '';
+  // Fetch user data on component mount
+  useEffect(() => {
+    async function fetchUserData() {
+      if (typeof window !== 'undefined') {
+        const allCookies = document.cookie || '';
 
-      if (allCookies) {
-        const cookiesArray = allCookies.split('; ');
-        let accessTokenPicValue = null;
+        if (allCookies) {
+          const cookiesArray = allCookies.split('; ');
+          let accessTokenPicValue = null;
 
-        for (const cookie of cookiesArray) {
-          const [name, value] = cookie.split('=');
-          if (name.trim() === 'accessTokenPic') {
-            accessTokenPicValue = value;
-            break;
+          for (const cookie of cookiesArray) {
+            const [name, value] = cookie.split('=');
+            if (name.trim() === 'accessTokenPic') {
+              accessTokenPicValue = value;
+              break;
+            }
           }
+
+          const secretKey = 'YOUR_SECRET_KEY'; // Replace with your secret key
+
+          const decryptData = (ciphertext, secretKey) => {
+            const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
+            const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+            return decryptedData;
+          };
+
+          const nilaiToken = decryptData(accessTokenPicValue, secretKey);
+          const decodedToken = jwt.decode(nilaiToken);
+          setUserData(decodedToken);
         }
-
-        const secretKey = '020bf63cbf793694ec956cc3673306c38eb75647738ee0e857f8c7b6d37e1498fd7fc27106263e90c331542a1a36955416bfa8f4e2c40f88d881a9b07700e48a';
-
-        const decryptData = (ciphertext, secretKey) => {
-          const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-          const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-          return decryptedData;
-        };
-
-        const nilaiToken = decryptData(accessTokenPicValue, secretKey);
-        const decodedToken = jwt.decode(nilaiToken);
-        setUserData(decodedToken);
       }
     }
-  }
 
-  fetchData();
-}, []);
+    fetchUserData();
+  }, []);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
-async function jumlahStatus(status) {
-  if (userData && userData.id_user) {
-    const response = await fifiAxios.get(`${artikelPageApi}?status=${status}&id_user=${userData.id_user}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.data.total;
-  } else {
-    // Handle jika userData atau userData.id_user adalah null
-    return 0; // Misalnya, kembalikan nilai default atau lakukan tindakan lain yang sesuai
-  }
-}
-
-useEffect(() => {
-  async function fetchData() {
+  // Fetch status count
+  async function jumlahStatus(status) {
     if (userData && userData.id_user) {
       try {
-        const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${userData.id_user}`, {
+        const response = await fifiAxios.get(`${artikelPageApi}?status=${status}&id_user=${userData.id_user}`, {
           headers: {
             'Content-Type': 'application/json',
           },
         });
-        const response2 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=pra-terima&id_user=${userData.id_user}`, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const response3 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=diterima&id_user=${userData.id_user}`, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data1 = response1.data.data;
-        const data2 = response2.data.data;
-        const data3 = response3.data.data;
-
-        const postinganTeratas = [...data1, ...data2, ...data3];
-
-        setDataAll(postinganTeratas);
+        return response.data.total;
       } catch (error) {
         console.error('Terjadi kesalahan saat mengambil data dari API:', error);
+        return 0; // Handle error and return a default value
+      }
+    } else {
+      return 0; // Handle if userData or userData.id_user is null
+    }
+  }
+
+  // Fetch data on userData change
+  useEffect(() => {
+    async function fetchData() {
+      if (userData && userData.id_user) {
+        try {
+          const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${userData.id_user}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const response2 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=pra-terima&id_user=${userData.id_user}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const response3 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=diterima&id_user=${userData.id_user}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const data1 = response1.data.data;
+          const data2 = response2.data.data;
+          const data3 = response3.data.data;
+
+          const postinganTeratas = [...data1, ...data2, ...data3];
+
+          setDataAll(postinganTeratas);
+        } catch (error) {
+          console.error('Terjadi kesalahan saat mengambil data dari API:', error);
+        }
       }
     }
-  }
 
-  fetchData();
-}, [userData]);
+    fetchData();
+  }, [userData]);
 
-useEffect(() => {
-  async function fetchData() {
-    if (userData && userData.id_user) {
-      try {
-        const response = await fifiAxios.get(`${artikelPageApi}?jumlah=10&id_user=${userData.id_user}`, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  // Fetch data on userData change
+  useEffect(() => {
+    async function fetchData() {
+      if (userData && userData.id_user) {
+        try {
+          const response = await fifiAxios.get(`${artikelPageApi}?jumlah=10&id_user=${userData.id_user}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        const data = response.data;
-        const postinganTeratas = data.data;
-        setDataAllActivity(postinganTeratas);
-      } catch (error) {
-        console.error('Terjadi kesalahan saat mengambil data dari API:', error);
+          const data = response.data;
+          const postinganTeratas = data.data;
+          setDataAllActivity(postinganTeratas);
+        } catch (error) {
+          console.error('Terjadi kesalahan saat mengambil data dari API:', error);
+        }
       }
     }
-  }
 
-  fetchData();
-}, [userData]);
+    fetchData();
+  }, [userData]);
 
-useEffect(() => {
-  async function fetchDataStatus() {
-    if (userData && userData.id_user) {
-      // Fetch data for jumlahProses
-      const prosesCount = await jumlahStatus('proses');
-      setJumlahProses(prosesCount);
+  // Fetch status counts on userData change
+  useEffect(() => {
+    async function fetchDataStatus() {
+      if (userData && userData.id_user) {
+        // Fetch data for jumlahProses
+        const prosesCount = await jumlahStatus('proses');
+        setJumlahProses(prosesCount);
 
-      // Fetch data for jumlahDiterima
-      const diterimaCount = await jumlahStatus('diterima');
-      setJumlahDiterima(diterimaCount);
+        // Fetch data for jumlahDiterima
+        const diterimaCount = await jumlahStatus('diterima');
+        setJumlahDiterima(diterimaCount);
 
-      // Fetch data for jumlahDitolak
-      const ditolakCount = await jumlahStatus('ditolak');
-      setJumlahDitolak(ditolakCount);
+        // Fetch data for jumlahDitolak
+        const ditolakCount = await jumlahStatus('ditolak');
+        setJumlahDitolak(ditolakCount);
+      }
     }
-  }
 
-  fetchDataStatus();
-}, [userData]);
+    fetchDataStatus();
+  }, [userData]);
 
   function filterHTMLTags(text) {
   // Menghilangkan tag HTML menggunakan regex
