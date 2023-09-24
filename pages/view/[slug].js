@@ -147,7 +147,7 @@ const ArticlePage = () => {
                     <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
                       {articles.judul}
                     </h1>
-                    <Image src={media} fluid />
+                    <Image src={media} fluid alt="foto artikel view" />
                   </>
                 ) : media.endsWith(".mp4") ? (
                   <>
