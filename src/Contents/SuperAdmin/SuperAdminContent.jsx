@@ -7,7 +7,7 @@ import Link from "next/link";
 import configureAxios from "../../../pages/axios-config";
 import { DataUser } from "@/components/DataUser";
 
-const AdminContent = () => {
+const SuperAdminContent = () => {
     const [dataAll, setDataAll] = useState([]);
     const [dataAllActivity, setDataAllActivity] = useState([]);
     const [jumlahProses, setJumlahProses] = useState(0);
@@ -395,4 +395,4 @@ renderDataAllActivity(dataAllActivity)
   );
 };
 
-export default AdminContent;
+export default SuperAdminContent;
