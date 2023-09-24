@@ -107,7 +107,7 @@ const UpdateArtikel = async (status) => {
             <Row className="mt-1">
                 <Col className='card pt-1'>
                     <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
-                    <Image src={media} fluid />
+                    <Image src={media} fluid alt={`image ${articles.judul}`}/>
                     <p className="mt-3"><em>Penulis: Nama Penulis | Editor: Nama Editor</em></p>
                     <p className="mt-3" dangerouslySetInnerHTML={{ __html: articles.isi }} />
                     <div className="mt-4">

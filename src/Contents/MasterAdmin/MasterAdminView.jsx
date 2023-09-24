@@ -205,7 +205,7 @@ const UpdateArtikel = async (status) => {
                             {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
                              <>
                             <h1 style={{ fontFamily: 'Time New Roman, sans-serif' }}>{articles.judul}</h1>
-                            <Image src={media} fluid />
+                            <Image src={media} fluid alt={`image ${articles.judul}`}/>
                             </>
                             ) : media.endsWith(".mp4") ? (
                             <>

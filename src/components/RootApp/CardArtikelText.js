@@ -128,11 +128,9 @@ const CardArtikelText = () => {
                   <Link
                     className="text-decoration-none"
                     href={`/view/${artikel.slug}`}
+                    key={`artikel-${artikel.id}-${index}`}
                   >
-                    <ListItem
-                      divider={hasDivider}
-                      key={`${artikel.id}-${index}`}
-                    >
+                    <ListItem divider={hasDivider}>
                       <ListItemText
                         primary={
                           <Typography
