@@ -19,7 +19,7 @@ const AdminContent = () => {
     const UserId = myUser !== null ? myUser.id_user : null;
 
    async function fetchData() {
-      if (myUser !== null) {
+      if (UserId !== null) {
         try {
           console.log(UserId);
           const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${UserId}`, {
@@ -55,7 +55,7 @@ const AdminContent = () => {
  
   // data untuk log activity
   async function fetchDataActivity() {
-    if(myUser !== null){
+    if(UserId !== null){
       try {
       const response = await fifiAxios.get(
         `${artikelPageApi}?jumlah=10&id_user=${UserId}`,
@@ -75,7 +75,7 @@ const AdminContent = () => {
   }
 
   async function fetchDataStatus() {
-    if(myUser !== null){
+    if(UserId !== null){
     // Fetch data for jumlahProses
     const prosesCount = await jumlahStatus("proses");
     setJumlahProses(prosesCount);
@@ -109,12 +109,12 @@ const AdminContent = () => {
   });
   return response.data.total;
 }
-  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData();
     fetchDataActivity();
     fetchDataStatus();
-  }, [myUser]);
+  }, [UserId]);
 
   function filterHTMLTags(text) {
   // Menghilangkan tag HTML menggunakan regex
