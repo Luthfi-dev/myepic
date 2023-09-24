@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { CheckAccessToken } from "@/components/verifHakAkses";
 import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
-const pageAdmin = () => {
+const PageAdmin = () => {
   useEffect(() => {
     // Memeriksa keberadaan token akses sebelum mengizinkan akses ke halaman ini
     const hcek = CheckAccessToken("admin");
@@ -32,4 +32,4 @@ const pageAdmin = () => {
   );
 };
 
-export default pageAdmin;
+export default PageAdmin;

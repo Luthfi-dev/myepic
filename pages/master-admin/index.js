@@ -7,7 +7,7 @@ import { MasterAdminLayout } from "../../src/components/MasterAdmin/MasterAdminL
 import MasterAdminContent from "../../src/Contents/MasterAdmin/MasterAdminContent";
 import { CheckAccessToken } from "@/components/verifHakAkses";
 
-const pageMasterAdmin = () => {
+const PageMasterAdmin = () => {
   useEffect(() => {
     // Memeriksa keberadaan token akses sebelum mengizinkan akses ke halaman ini
     const hcek = CheckAccessToken("master-admin");
@@ -29,4 +29,4 @@ const pageMasterAdmin = () => {
   );
 };
 
-export default pageMasterAdmin;
+export default PageMasterAdmin;

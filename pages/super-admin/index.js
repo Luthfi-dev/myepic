@@ -7,7 +7,7 @@ import { SuperAdminLayout } from "../../src/components/SuperAdmin/SuperAdminLayo
 import SuperAdminContent from "../../src/Contents/SuperAdmin/SuperAdminContent";
 import { CheckAccessToken } from "@/components/verifHakAkses";
 
-const pageAdmin = () => {
+const PageSuperAdmin = () => {
   useEffect(() => {
     // Memeriksa keberadaan token akses sebelum mengizinkan akses ke halaman ini
     const hcek = CheckAccessToken("super-admin");
@@ -29,4 +29,4 @@ const pageAdmin = () => {
   );
 };
 
-export default pageAdmin;
+export default PageSuperAdmin;
