@@ -298,7 +298,10 @@ const MyForm = () => {
       formData.quillContent == "" ||
       formData.tags == ""
     ) {
-      alert("kolom judul, isi postingan dan tags tidak boleh kosong");
+      showDynamicAlert(
+        "kolom judul, isi postingan dan tags tidak boleh kosong",
+        "error"
+      );
       return;
     }
 
