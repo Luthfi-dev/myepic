@@ -323,10 +323,9 @@ const MyForm = () => {
         });
 
         if (response.status === 200) {
-          alert(
-            `Data berhasil ${
-              apiMethod === "post" ? "disimpan" : "diupdate"
-            } ke API`
+          showDynamicAlert(
+            `Data berhasil Dikirim untuk Diverifikasi`,
+            "successTime"
           );
         } else {
           throw new Error("Gagal mengirim data ke API");

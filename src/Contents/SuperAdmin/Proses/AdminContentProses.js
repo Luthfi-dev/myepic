@@ -292,7 +292,7 @@ const MyForm = () => {
       tags: `${formData.tags}`,
       slug: formData.slugg,
       user_id: UserId,
-      status: "proses",
+      status: "pra-terima",
     };
 
     // hentikan post jika data kosong
@@ -323,10 +323,9 @@ const MyForm = () => {
         });
 
         if (response.status === 200) {
-          alert(
-            `Data berhasil ${
-              apiMethod === "post" ? "disimpan" : "diupdate"
-            } ke API`
+          showDynamicAlert(
+            `Data berhasil Dikirim untuk Diverifikasi`,
+            "successTime"
           );
         } else {
           throw new Error("Gagal mengirim data ke API");
