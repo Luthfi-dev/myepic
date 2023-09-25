@@ -22,17 +22,17 @@ const MasterAdminContent = () => {
       if (myUser !== null) {
         try {
           console.log(UserId);
-          const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=proses&id_user=${UserId}`, {
+          const response1 = await fifiAxios.get(`${artikelPageApi}?jumlah=3&status=proses&id_user=${UserId}`, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-          const response2 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=pra-terima&id_user=${UserId}`, {
+          const response2 = await fifiAxios.get(`${artikelPageApi}?jumlah=3&status=pra-terima&id_user=${UserId}`, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-          const response3 = await fifiAxios.get(`${artikelPageApi}?jumlah=5&status=diterima&id_user=${UserId}`, {
+          const response3 = await fifiAxios.get(`${artikelPageApi}?jumlah=2&status=diterima&id_user=${UserId}`, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -308,7 +308,7 @@ renderDataAllActivity(dataAllActivity)
 
               <div className="row mt-3">
                 <center>
-                  <Link href="/admin/data-posting"><button className="btn btn-app btn-sm">semua artikel <i className="bi bi-arrow-right"></i></button></Link>
+                  <Link href="/master-admin/data-posting"><button className="btn btn-app btn-sm">semua artikel <i className="bi bi-arrow-right"></i></button></Link>
                 </center>
               </div>
               {/* <!-- End sidebar recent posts--> */}
