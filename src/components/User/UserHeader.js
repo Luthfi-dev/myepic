@@ -99,7 +99,7 @@ const AdminHeader = () => {
             // style={{ backgroundImage: "url(/assets/img/logo-text.png)" }}
           >
             <Image
-              src="/assets/img/logo-text.png"
+              src="/assets/img/logotext.PNG"
               alt="logo epic"
               width={150}
               height={80}
