@@ -1,7 +1,6 @@
 // pages/login.js
 import React from "react";
 import { Helmet } from "react-helmet";
-import { MasterAdminLayout } from "@/components/MasterAdmin/MasterAdminLayout";
 import DataTable from "@/components/Manag/ManagUser";
 
 const PageKontak = () => {
@@ -17,9 +16,7 @@ const PageKontak = () => {
         <meta name="keywords" content="login, penulis/kontributor thinkepic" />
       </Helmet>
       {/* desktop */}
-      <MasterAdminLayout>
-        <DataTable />
-      </MasterAdminLayout>
+      <DataTable />
     </div>
   );
 };

@@ -19,3 +19,4 @@ export const kategoriApiUser = `${myAppLink}/api/user/kategori`;
 export const artikelUser = `${myAppLink}/api/artikeluser?api_key=jdfgskdgfskdgffrfgr-fdjfgsdgfshd&`;
 export const artikelUserNotKey = `${myAppLink}/api/artikeluser`;
 export const searchUser = `${myAppLink}/api/search`;
+export const managUser = `${myAppLink}/api/manag/user`;
