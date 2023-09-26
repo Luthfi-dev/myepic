@@ -17,3 +17,5 @@ export const notifikasiApi = `${myAppLink}/api/notifikasi`;
 export const getNamaApi = `${myAppLink}/api/get/user`;
 export const kategoriApiUser = `${myAppLink}/api/user/kategori`;
 export const artikelUser = `${myAppLink}/api/artikeluser?api_key=jdfgskdgfskdgffrfgr-fdjfgsdgfshd&`;
+export const artikelUserNotKey = `${myAppLink}/api/artikeluser`;
+export const searchUser = `${myAppLink}/api/search`;

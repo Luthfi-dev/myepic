@@ -5,9 +5,9 @@ import { artikelUser, publicApi, getNamaApi } from "/utils/globals";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { Helmet } from "react-helmet";
-// import CardArtikel from "@/components/RootApp/CardArtikel";
+import { UserLayout } from "../../src/components/User/UserLayout";
 import CardPopuler from "@/components/RootApp/CardPopuler";
-import { linkApi, myAppLink } from "../../utils/globals";
+import { artikelUserNotKey, linkApi, myAppLink } from "../../utils/globals";
 
 const ArticlePage = () => {
   const [addCardClass, setAddCardClass] = useState(false);
@@ -127,69 +127,102 @@ const ArticlePage = () => {
     }
   }
 
+  // update view artikel
+  useEffect(() => {
+    if (articles.id) {
+      // Memeriksa apakah articles.id memiliki nilai
+      try {
+        console.log("uuu", articles.id);
+        axios
+          .put(
+            `${artikelUserNotKey}/${articles.id}`,
+            {
+              view: 1,
+            },
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+            }
+          )
+          .then((response) => {
+            console.log("Response:", response);
+            // Handle respons yang sukses di sini
+          })
+          .catch((error) => {
+            console.error("Error updating view:", error);
+            // Handle kesalahan di sini
+          });
+      } catch (error) {
+        console.error("An error occurred: ", error);
+      }
+    }
+  }, [articles.id]);
+
   return (
     <>
-      <Helmet>
-        <title>{articles.judul}</title>
+      <UserLayout>
+        <Helmet>
+          <title>{articles.judul}</title>
 
-        <meta name="description" content={articles.judul} />
-        <meta name="keywords" content={articles.tags} />
-      </Helmet>
-      <Container className="col-md-8">
-        <Row className="col-md-12 mt-1">
-          <Col className="col-12 col-md-8 pt-1 mb-5">
-            {media !== `${publicApi}/` ? (
-              <>
-                {media.endsWith(".jpg") ||
-                media.endsWith(".png") ||
-                media.endsWith(".jpeg") ? (
-                  <>
-                    <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
-                      {articles.judul}
-                    </h1>
-                    <Image src={media} fluid alt="image artikel" />
-                  </>
-                ) : media.endsWith(".mp4") ? (
-                  <>
-                    <video controls>
-                      <source src={media} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                    <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
-                      {articles.judul}
-                    </h1>
-                  </>
-                ) : (
-                  "Tipe media tidak didukung" // Tambahkan pesan kesalahan jika ekstensi tidak dikenali
-                )}
-              </>
-            ) : (
-              <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
-                {articles.judul}
-              </h1>
-            )}
+          <meta name="description" content={articles.judul} />
+          <meta name="keywords" content={articles.tags} />
+        </Helmet>
+        <Container className="col-md-8">
+          <Row className="col-md-12 mt-1">
+            <Col className="col-12 col-md-8 pt-1 mb-5">
+              {media !== `${publicApi}/` ? (
+                <>
+                  {media.endsWith(".jpg") ||
+                  media.endsWith(".png") ||
+                  media.endsWith(".jpeg") ? (
+                    <>
+                      <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
+                        {articles.judul}
+                      </h1>
+                      <Image src={media} fluid alt="image artikel" />
+                    </>
+                  ) : media.endsWith(".mp4") ? (
+                    <>
+                      <video controls className="col-md-12 col-12">
+                        <source src={media} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                      <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
+                        {articles.judul}
+                      </h1>
+                    </>
+                  ) : (
+                    "Tipe media tidak didukung" // Tambahkan pesan kesalahan jika ekstensi tidak dikenali
+                  )}
+                </>
+              ) : (
+                <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
+                  {articles.judul}
+                </h1>
+              )}
 
-            <p className="mt-3">
-              <em>
-                {media.endsWith(".jpg") ||
-                media.endsWith(".png") ||
-                media.endsWith(".jpeg")
-                  ? `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`
-                  : media.endsWith(".mp4")
-                  ? `Creator: ${namaPenulis} | Editor: ${namaEditor || "-"}`
-                  : `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`}
-              </em>
-            </p>
+              <p className="mt-3">
+                <em>
+                  {media.endsWith(".jpg") ||
+                  media.endsWith(".png") ||
+                  media.endsWith(".jpeg")
+                    ? `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`
+                    : media.endsWith(".mp4")
+                    ? `Creator: ${namaPenulis} | Editor: ${namaEditor || "-"}`
+                    : `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`}
+                </em>
+              </p>
 
-            <p
-              className="mt-3"
-              dangerouslySetInnerHTML={{ __html: articles.isi }}
-            />
-            <div className="mt-4">
-              <button class="btn btn-app bordered" onClick={handleShareClick}>
-                <span class="bi bi-share"></span> Bagikan
-              </button>
-              {/* <Button variant="success" className="mr-2">
+              <p
+                className="mt-3"
+                dangerouslySetInnerHTML={{ __html: articles.isi }}
+              />
+              <div className="mt-4">
+                <button class="btn btn-app bordered" onClick={handleShareClick}>
+                  <span class="bi bi-share"></span> Bagikan
+                </button>
+                {/* <Button variant="success" className="mr-2">
                 <Link
                   href="whatsapp://send?text=Judul%20Artikel:%20URL_Artikel"
                   target="_blank"
@@ -226,13 +259,14 @@ const ArticlePage = () => {
                   <i className="fas fa-copy"></i> Copy Link
                 </Link>
               </Button> */}
-            </div>
-          </Col>
-          <Col className="col-12 col-md-4 pt-1">
-            <CardPopuler />
-          </Col>
-        </Row>
-      </Container>
+              </div>
+            </Col>
+            <Col className="col-12 col-md-4 pt-1">
+              <CardPopuler />
+            </Col>
+          </Row>
+        </Container>
+      </UserLayout>
     </>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { kategoriApiUser, publicApi } from "../../utils/globals";
 import Image from "next/image";
+import Head from "next/head";
 import axios from "axios";
 import { useRouter } from "next/router";
 import ImageCarousel from "@/components/RootApp/carausel";
@@ -48,6 +49,11 @@ const HomeIndex = () => {
 
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Thinkepic CMS</title>
+      </Head>
+
       <div className="container-fluid col-md-8 p-0">
         <ImageCarousel />
         <hr
