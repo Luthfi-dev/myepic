@@ -8,6 +8,7 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+
 :root {
   scroll-behavior: smooth;
 }
@@ -19,12 +20,12 @@ body {
 }
 
 a {
-  color: #4154f1;
+  color: #4C7C9E;
   text-decoration: none;
 }
 
 a:hover {
-  color: #717ff5;
+  color: #4C7C9E;
   text-decoration: none;
 }
 
@@ -1260,6 +1261,7 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+/* ========== */
 
 /* new button */
 .btn-app {
@@ -1268,3 +1270,19 @@ h6 {
   /* Gaya lainnya dengan !important */
 }
 
+/* Mengubah latar belakang menu aktif menjadi hijau */
+.nav-link.active {
+  color: #4C7C9E;
+}
+
+.color-app {
+  color:#FF4723;
+}
+
+.bg-app {
+  background-color: #FF4723;
+}
+
+.color-app2 {
+  color: #4C7C9E;
+}

@@ -7,6 +7,11 @@ import jwt from "jsonwebtoken";
 import CryptoJS from "crypto-js";
 import NextNProgress from "nextjs-progressbar";
 
+import { appWithTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
+import i18n from "@/components/MyTranslate";
+import { Trans } from "react-i18next";
+
 import "../public/assets/vendor/bootstrap/css/bootstrap.min.css";
 import "../public/assets/vendor/bootstrap-icons/bootstrap-icons.css";
 import "../public/assets/vendor/boxicons/css/boxicons.min.css";
@@ -23,6 +28,13 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 function MyApp({ Component, pageProps }) {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    // Ganti bahasa aktif menjadi bahasa Inggris saat komponen pertama kali di-render
+    i18n.changeLanguage("en");
+  }, []);
+
   return (
     <>
       <NextNProgress
@@ -31,9 +43,11 @@ function MyApp({ Component, pageProps }) {
         stopDelayMs={1000}
         height={3}
       />
-      <Component {...pageProps} />
+      <Trans>
+        <Component {...pageProps} />
+      </Trans>
     </>
   );
 }
 
-export default MyApp;
+export default appWithTranslation(MyApp);

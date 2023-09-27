@@ -112,6 +112,7 @@ const ManagUser = () => {
             <th scope="col">email</th>
             <th scope="col">nama</th>
             <th scope="col">status akun</th>
+            <th scope="col">role</th>
             <th scope="col">status login</th>
           </tr>
         </thead>
@@ -149,6 +150,7 @@ const ManagUser = () => {
                 </select>
               </td>
 
+              <td>{user.role}</td>
               <td>{user.refresh_token === "" ? "NO" : "YES"}</td>
             </tr>
           ))}
