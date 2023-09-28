@@ -121,7 +121,7 @@ const AdminHeader = () => {
             placeholder="Search"
             title="Enter search keyword"
           />
-          <button title="Search">
+          <button title="Search" className="color-app">
             <FullScreenDialog />
           </button>
         </div>
@@ -131,7 +131,7 @@ const AdminHeader = () => {
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
           <li className="nav-item d-block d-lg-none">
-            <span className="nav-link nav-icon search-bar-toggle ">
+            <span className="nav-link nav-icon search-bar-toggle color-app">
               <FullScreenDialog />
             </span>
           </li>

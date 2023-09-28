@@ -219,6 +219,7 @@ export const CardVideo = () => {
           height: "50px",
           width: "100%",
           background: "url(/assets/svg/component/label-header.svg)",
+          backgroundRepeat: "no-repeat",
           color: "white",
           marginLeft: "-5px",
           marginBottom: "15px",
@@ -234,7 +235,7 @@ export const CardVideo = () => {
                 <Card>
                   <CardHeader
                     avatar={
-                      <Avatar sx={{ bgcolor: "#4352EF" }} aria-label="recipe">
+                      <Avatar className="bg-app" aria-label="recipe">
                         {inisialUser(penulisMap[artikel.user_id] || "U")}
                       </Avatar>
                     }

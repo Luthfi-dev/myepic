@@ -6,7 +6,7 @@ import Head from "next/head";
 import axios from "axios";
 import { useRouter } from "next/router";
 import ImageCarousel from "@/components/RootApp/carausel";
-import TabScroll from "@/components/RootApp/NavCategory";
+import TabScroll from "@/components/RootApp/NavCategory2";
 import CardArtikel from "@/components/RootApp/CardArtikel";
 import CardArtikelText from "@/components/RootApp/CardArtikelText";
 import { CardVideo } from "@/components/RootApp/CardVideo";
@@ -54,7 +54,7 @@ const HomeIndex = () => {
         <title>Thinkepic CMS</title>
       </Head>
 
-      <div className="container-fluid col-md-8 p-0">
+      <div className="container-fluid col-md-12 p-0">
         <ImageCarousel />
         <hr
           style={{ color: "#4352EF", margin: "0", border: "2px solid #4352EF" }}

@@ -52,8 +52,9 @@ export default function FullScreenDialog() {
         onClose={handleClose}
         TransitionComponent={Transition}
         style={{ zIndex: "9999" }}
+        className="bg-app"
       >
-        <AppBar sx={{ position: "relative" }}>
+        <AppBar sx={{ position: "relative" }} className="bg-app">
           <Toolbar>
             <b>
               <span
@@ -94,10 +95,10 @@ export default function FullScreenDialog() {
                 className="nav-link"
                 onClick={handleClose}
               >
-                <ListItem button key={result.id}>
+                <ListItem button key={result.id} className="bg-app text-light">
                   <ListItemText primary={result.judul} />
                   <IconButton
-                    color="primary"
+                    className="text-light"
                     onClick={() => handleDetail(result.id)}
                   >
                     <span className="bi bi-eye"></span>

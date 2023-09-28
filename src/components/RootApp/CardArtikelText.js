@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { Trans } from "react-i18next";
 import {
   Box,
   Button,
@@ -111,6 +112,7 @@ const CardArtikelText = () => {
           <>
             <CardHeader
               title="Artikels Teks"
+              className="bg-app"
               sx={{
                 height: "40px",
                 width: "100%",
@@ -134,19 +136,18 @@ const CardArtikelText = () => {
                       <ListItemText
                         primary={
                           <Typography
+                            style={{ color: "black" }}
                             sx={
                               window.innerWidth <= 600
                                 ? {
                                     fontSize: "12pt",
                                     fontWeight: "bold",
                                     lineHeight: "1",
-                                    color: "#4352EF",
                                   }
                                 : {
                                     fontSize: "16pt",
                                     fontWeight: "bold",
                                     lineHeight: "1",
-                                    color: "#4352EF",
                                   }
                             }
                             gutterBottom

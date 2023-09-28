@@ -134,19 +134,18 @@ const CardPopuler = () => {
                       <ListItemText
                         primary={
                           <Typography
+                            style={{ color: "black" }}
                             sx={
                               window.innerWidth <= 600
                                 ? {
                                     fontSize: "12pt",
                                     fontWeight: "bold",
                                     lineHeight: "1",
-                                    color: "#4352EF",
                                   }
                                 : {
                                     fontSize: "16pt",
                                     fontWeight: "bold",
                                     lineHeight: "1",
-                                    color: "#4352EF",
                                   }
                             }
                             gutterBottom
