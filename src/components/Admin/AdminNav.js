@@ -63,7 +63,7 @@ const AdminNav = () => {
                 </Link>
               </li>
 
-              <li>
+              {/* <li>
                 <Link href="/admin/category" legacyBehavior>
                   <a>
                     <span>
@@ -75,7 +75,7 @@ const AdminNav = () => {
                     </span>
                   </a>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </li>
 

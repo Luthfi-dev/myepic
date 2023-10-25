@@ -17,7 +17,7 @@ function SitemapMenu() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get("https://ex.luth.my.id/sitemap_menus"); // Ganti URL sesuai kebutuhan Anda
+        const response = await axios.get("https://ex.luth.my.id/sitemap_menus");
         setMenus(response.data);
       } catch (error) {
         console.error("Gagal mengambil data sitemap menu:", error);
@@ -34,9 +34,9 @@ function SitemapMenu() {
   // Handle penambahan menu baru
   const handleAddMenu = async () => {
     try {
-      await axios.post("https://ex.luth.my.id/sitemap_menus", newMenu); // Ganti URL sesuai kebutuhan Anda
+      await axios.post("https://ex.luth.my.id/sitemap_menus", newMenu);
       // Ambil ulang data sitemap menu setelah menambahkan
-      const response = await axios.get("https://ex.luth.my.id/sitemap_menus"); // Ganti URL sesuai kebutuhan Anda
+      const response = await axios.get("https://ex.luth.my.id/sitemap_menus");
       setMenus(response.data);
       setNewMenu({ title: "", url: "", parent_id: null, position: "" });
     } catch (error) {
@@ -53,9 +53,9 @@ function SitemapMenu() {
   // Handle penghapusan menu berdasarkan ID
   const handleDeleteMenu = async (menuId) => {
     try {
-      await axios.delete(`https://ex.luth.my.id/sitemap_menus/${menuId}`); // Ganti URL sesuai kebutuhan Anda
+      await axios.delete(`https://ex.luth.my.id/sitemap_menus/${menuId}`);
       // Ambil ulang data sitemap menu setelah menghapus
-      const response = await axios.get("https://ex.luth.my.id/sitemap_menus"); // Ganti URL sesuai kebutuhan Anda
+      const response = await axios.get("https://ex.luth.my.id/sitemap_menus");
       setMenus(response.data);
     } catch (error) {
       console.error("Gagal menghapus menu:", error);

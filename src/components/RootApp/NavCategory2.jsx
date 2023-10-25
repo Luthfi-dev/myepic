@@ -31,8 +31,8 @@ const Nav2 = () => {
   const parentCategories = categories.filter((category) => !category.parent_id);
   const childCategories = categories.filter((category) => category.parent_id);
 
-  console.log("ini parent", parentCategories);
-  console.log("ini child", childCategories);
+  // console.log("ini parent", parentCategories);
+  // console.log("ini child", childCategories);
 
   const handleTab = (event, newValue) => {
     setVal(newValue);
@@ -56,11 +56,16 @@ const Nav2 = () => {
         scrollButtons="auto"
         aria-label="scrollable auto tabs example"
         style={{ boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)" }}
+        className="silver-app"
       >
         {parentCategories.map((parentCategory, index) => (
           <div key={index}>
             <Tab
-              label={parentCategory.title}
+              label={parentCategory.url !== "" ? (
+                  <Link className="nav-link color-app" href={parentCategory.url}>{parentCategory.title}</Link>
+                ) : (
+                  <span>{parentCategory.title}</span>
+                )}
               aria-owns={anchorEl ? 'simple-menu' : undefined}
               aria-haspopup="true"
               indicatorColor="primary"
@@ -82,7 +87,7 @@ const Nav2 = () => {
                       {
                         childCategory.parent_id === parentCategory.id ? (
                           <MenuItem onClick={handleMenuClose}>
-                            <Link href={`/p/${childCategory.url}`} >{childCategory.title}</Link>
+                            <Link className="nav-link color-app" href={`/p/${childCategory.url}`} >{childCategory.title}</Link>
                           </MenuItem>
                         ) : null
                       }

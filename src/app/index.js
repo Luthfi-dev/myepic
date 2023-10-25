@@ -7,11 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import ImageCarousel from "@/components/RootApp/carausel";
 import TabScroll from "@/components/RootApp/NavCategory2";
-import CardArtikel from "@/components/RootApp/CardArtikel";
-import CardArtikelText from "@/components/RootApp/CardArtikelText";
-import { CardVideo } from "@/components/RootApp/CardVideo";
-import { Box, Container, Unstable_Grid2 as Grid } from "@mui/material";
-import CardPopuler from "@/components/RootApp/CardPopuler";
+import { CardListArtikel } from "@/components/RootApp/CardListArtikel";
 
 const HomeIndex = () => {
   const router = useRouter();
@@ -56,12 +52,18 @@ const HomeIndex = () => {
 
       <div className="container-fluid col-md-12 p-0">
         <ImageCarousel />
-        <hr
+        {/* <hr
           style={{ color: "#4352EF", margin: "0", border: "2px solid #4352EF" }}
-        />
+        /> */}
         <TabScroll pKategori={setPilihKategori} categories={categories} />
-        <div className="row">
-          <div className="col-lg-8 mt-2 bordered">
+      </div>
+
+      <div
+        className="container-fluid col-md-8 mt-5"
+        style={{ backgroundColor: "#F5F6F8", borderRadius: "10px" }}
+      >
+        <CardListArtikel />
+        {/* <div className="col-lg-8 mt-2 bordered">
             <CardArtikel
               categories={categories}
               pKategori={pilihKategori}
@@ -73,8 +75,7 @@ const HomeIndex = () => {
           <div className="col-lg-4 mt-2 bordered">
             <CardArtikelText sx={{ height: "100%" }} />
             <CardPopuler className="mt-2" />
-          </div>
-        </div>
+          </div> */}
       </div>
     </>
   );

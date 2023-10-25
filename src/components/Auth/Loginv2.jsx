@@ -23,13 +23,13 @@ const router = useRouter();
     nama: "",
     password: "",
     confir_password: "",
-    role: "",
+    role: "admin",
   });
 
   const [formDataLogin, setFormDataLogin] = useState({
     email: "",
     nama: "",
-    role: ""
+    role: "admin"
   });
 
   const handleChange = async (e) => {
@@ -60,20 +60,7 @@ const router = useRouter();
   showDynamicAlert("Loading..","loading");
 
   try {
-    // uraikan role
-  let roleName = '';
-  let roleNameText = '';
-  if (formDataLogin.role === "2") {
-    roleName = "admin";
-    roleNameText = "penulis"
-  } else if (formDataLogin.role === "1") {
-    roleName = "user";
-    roleNameText = "pembaca";
-  } else {
-    showDynamicAlert("pilih dengan benar kolom sebagai", "warning");
-    return; // Menghentikan eksekusi di sini jika kondisi tidak terpenuhi
-  }
-    const postData = {"email": formDataLogin.email,"password": formDataLogin.password,"role": roleName}
+    const postData = {"email": formDataLogin.email,"password": formDataLogin.password,"role": formDataLogin.role}
           console.log("oke")
       // Lakukan permintaan POST ke URL
       const response = await axios.post(reqTokenApi, postData, {
@@ -101,13 +88,8 @@ const router = useRouter();
 
     setCookie('accessTokenPic', encryptedAccessToken, 30*24*60*60*1000 );
     if(response.status === 200){
-      if(formDataLogin.role === "2"){
-        showDynamicAlert("Login Sukses", "successTime");
-        router.push("/routes/admin");
-      } else if(formDataLogin.role === "1"){
         showDynamicAlert("Login Sukses", "successTime");
         router.push("/routes/user");
-      }
     } 
 
       // // Simpan access_token di localStorage
@@ -158,21 +140,8 @@ const handleSubmit = async (event) => {
     return;
   }
 
-  // Uraikan role
-  let roleName = '';
-  let roleNameText = '';
-  if (formData.role === "2") {
-    roleName = "admin";
-    roleNameText = "penulis"
-  } else if (formData.role === "1") {
-    roleName = "user";
-    roleNameText = "pembaca";
-  } else {
-    showDynamicAlert("Pilih dengan benar kolom sebagai", "warning");
-    return;
-  }
 
-  const DataCek = `${cekMailApi}?email=${formData.email}&role=${roleName}`;
+  const DataCek = `${cekMailApi}?email=${formData.email}&role=${formData.role}`;
   console.log(DataCek);
 
   try {
@@ -180,7 +149,7 @@ const handleSubmit = async (event) => {
     const response = await axios.get(DataCek);
 
     if (response.data.length > 0) {
-      showDynamicAlert(`Email sudah terdaftar sebagai ${roleNameText}. Silahkan lakukan login.`, "warning");
+      showDynamicAlert(`Email sudah terdaftar sebagai ${formData.roleText}. Silahkan lakukan login.`, "warning");
     } else {
       console.log(response.data);
 
@@ -189,7 +158,7 @@ const handleSubmit = async (event) => {
         email: formData.email,
         nama: formData.nama,
         password: formData.password,
-        role: roleName
+        role: formData.role
       };
 
       console.log("Data post", postData);
@@ -267,11 +236,6 @@ const handleSubmit = async (event) => {
                 <input type="password" className="input" name="password" id="password" value={formData.password} onChange={handleChange} placeholder="Masukkan Password" onBlur={checkPasswordLength} />
                 <span className="text-light" id="notif_password2"></span>
                 <input type="password" className="input" name="confir_password" id="confirm_password" value={formData.confir_password} onChange={handleChange} placeholder="Ulangi Password" onBlur={checkPasswordLength} />
-                <select name="role" value={formData.roll} onChange={handleChange} className="form-control">
-                  <option>pilih sebagai</option>
-                  <option value="1">Pembaca</option>
-                  <option value="2">Penulis</option>
-                </select>
                 </div>
                 <button className="submit-btn" onClick={handleSubmit}>Sign up</button>
                 <hr />
@@ -334,11 +298,6 @@ const handleSubmit = async (event) => {
                 <div className="form-holder" style={{marginTop:"20px"}}>
                     <input type="email" className="input" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleChangeLogin} />
                     <input type="password" className="input" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleChangeLogin} />
-                    <select name="role" value={formDataLogin.role} onChange={handleChangeLogin} className="form__input">
-                      <option>pilih sebagai</option>
-                      <option value="1">Pembaca</option>
-                      <option value="2">Penulis</option>
-                    </select>
                 </div>
                 
                 <button className="submit-btn rounded" onClick={handleSubmitLogin}>Log in</button>

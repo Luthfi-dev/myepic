@@ -1,5 +1,10 @@
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import { Container, Row, Col, Image, Button } from "react-bootstrap";
 import { artikelUser, publicApi, getNamaApi } from "/utils/globals";
 import { useRouter } from "next/router";
@@ -8,6 +13,7 @@ import { Helmet } from "react-helmet";
 import { UserLayout } from "../../src/components/User/UserLayout";
 import CardPopuler from "@/components/RootApp/CardPopuler";
 import { artikelUserNotKey, linkApi, myAppLink } from "../../utils/globals";
+import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
 const ArticlePage = () => {
   const [addCardClass, setAddCardClass] = useState(false);
@@ -15,12 +21,11 @@ const ArticlePage = () => {
   const [media, setMedia] = useState("");
   const [namaPenulis, setNamaPenulis] = useState(null);
   const [namaEditor, setNamaEditor] = useState(null);
+  const [copyLinkOpen, setCopyLinkOpen] = useState(false);
+
   const router = useRouter();
 
-  // console.log("media", media);
-
   useEffect(() => {
-    // Fungsi untuk menangani peristiwa scroll
     const handleScroll = () => {
       if (window.scrollY >= 50) {
         setAddCardClass(true);
@@ -29,26 +34,22 @@ const ArticlePage = () => {
       }
     };
 
-    // Tambahkan event listener untuk mendengarkan peristiwa scroll
     window.addEventListener("scroll", handleScroll);
 
-    // Jangan lupa untuk menghapus event listener saat komponen unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   const { slug } = router.query;
-  // console.log("benarr", slug);
+
   useEffect(() => {
-    // Pastikan slug tidak kosong sebelum melakukan permintaan Axios
     if (slug) {
       try {
         axios
           .get(`${artikelUser}&slug=${slug}`)
           .then((response) => {
             setArticles(response.data.data[0]);
-            // console.log("hh", response.data.data[0]);
             setMedia(`${publicApi}/${response.data.data[0].media}`);
           })
           .catch((error) => {
@@ -61,15 +62,12 @@ const ArticlePage = () => {
   }, [slug]);
 
   useEffect(() => {
-    // Fungsi untuk mengambil nama penulis berdasarkan id_user
     const fetchNamaPenulis = async () => {
       try {
-        // console.log("artikel", articles);
         const response = await axios.get(
           `${getNamaApi}?id=${articles.user_id}`
         );
         const nama = response.data[0].nama;
-        // console.log("nammmmm", nama);
         setNamaPenulis(nama);
       } catch (error) {
         console.error("Terjadi kesalahan saat mengambil data dari API:", error);
@@ -82,15 +80,12 @@ const ArticlePage = () => {
   }, [articles]);
 
   useEffect(() => {
-    // Fungsi untuk mengambil nama Editor berdasarkan id_user
     const fetchNamaEditor = async () => {
       try {
-        // console.log("artikel", articles);
         const response = await axios.get(
           `${getNamaApi}?id=${articles.user_id}`
         );
         const nama = response.data[0].nama;
-        // console.log("nammmmm", nama);
         setNamaEditor(nama);
       } catch (error) {
         console.error("Terjadi kesalahan saat mengambil data dari API:", error);
@@ -102,8 +97,20 @@ const ArticlePage = () => {
     }
   }, [articles]);
 
-  // bagikan artikel
-  // Fungsi untuk menangani klik tombol share
+  const handleCopyLinkClick = () => {
+    setCopyLinkOpen(true);
+  };
+
+  const handleCopyClick = async (link) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopyLinkOpen(false);
+      showDynamicAlert("Link Berhasil Disalin", "successTime");
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+    }
+  };
+
   function handleShareClick() {
     if (navigator.share) {
       let shareData = {
@@ -111,13 +118,8 @@ const ArticlePage = () => {
         url: `${myAppLink}/view/${articles.slug}`,
       };
 
-      // Periksa apakah ada media (gambar) yang tersedia
       if (articles.media !== "") {
-        // Tambahkan gambar pratinjau
-        shareData.image = [
-          // Gunakan array image jika ingin menyediakan beberapa gambar pilihan
-          { src: `${linkApi}/${articles.media}` },
-        ];
+        shareData.image = [{ src: `${linkApi}/${articles.media}` }];
       }
 
       navigator
@@ -127,12 +129,9 @@ const ArticlePage = () => {
     }
   }
 
-  // update view artikel
   useEffect(() => {
     if (articles.id) {
-      // Memeriksa apakah articles.id memiliki nilai
       try {
-        console.log("uuu", articles.id);
         axios
           .put(
             `${artikelUserNotKey}/${articles.id}`,
@@ -147,11 +146,9 @@ const ArticlePage = () => {
           )
           .then((response) => {
             console.log("Response:", response);
-            // Handle respons yang sukses di sini
           })
           .catch((error) => {
             console.error("Error updating view:", error);
-            // Handle kesalahan di sini
           });
       } catch (error) {
         console.error("An error occurred: ", error);
@@ -164,14 +161,13 @@ const ArticlePage = () => {
       <UserLayout>
         <Helmet>
           <title>{articles.judul}</title>
-
           <meta name="description" content={articles.judul} />
           <meta name="keywords" content={articles.tags} />
         </Helmet>
         <Container className="col-md-8">
           <Row className="col-md-12 mt-1">
             <Col className="col-12 col-md-8 pt-1 mb-5">
-              {media !== `${publicApi}/` ? (
+              {/* {media !== `${publicApi}/` ? (
                 <>
                   {media.endsWith(".jpg") ||
                   media.endsWith(".png") ||
@@ -193,24 +189,27 @@ const ArticlePage = () => {
                       </h1>
                     </>
                   ) : (
-                    "Tipe media tidak didukung" // Tambahkan pesan kesalahan jika ekstensi tidak dikenali
+                    "Tipe media tidak didukung"
                   )}
                 </>
               ) : (
                 <h1 style={{ fontFamily: "Time New Roman, sans-serif" }}>
                   {articles.judul}
                 </h1>
-              )}
+              )} */}
 
-              <p className="mt-3">
+              <h2
+                style={{
+                  fontFamily: "Time New Roman, sans-serif",
+                  marginTop: "5px",
+                }}
+              >
+                {articles.judul}
+              </h2>
+
+              <p className="mt-3" style={{ fontSize: "11px" }}>
                 <em>
-                  {media.endsWith(".jpg") ||
-                  media.endsWith(".png") ||
-                  media.endsWith(".jpeg")
-                    ? `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`
-                    : media.endsWith(".mp4")
-                    ? `Creator: ${namaPenulis} | Editor: ${namaEditor || "-"}`
-                    : `Penulis: ${namaPenulis} | Editor: ${namaEditor || "-"}`}
+                  Creator: {namaPenulis} | Editor: {namaEditor || "-"}
                 </em>
               </p>
 
@@ -219,46 +218,82 @@ const ArticlePage = () => {
                 dangerouslySetInnerHTML={{ __html: articles.isi }}
               />
               <div className="mt-4">
-                <button class="btn btn-app bordered" onClick={handleShareClick}>
-                  <span class="bi bi-share"></span> Bagikan
+                <button
+                  className="btn btn-app bordered"
+                  onClick={handleShareClick}
+                >
+                  <span className="bi bi-share"></span> Bagikan
                 </button>
-                {/* <Button variant="success" className="mr-2">
-                <Link
-                  href="whatsapp://send?text=Judul%20Artikel:%20URL_Artikel"
-                  target="_blank"
-                  className="text-white"
+                <button
+                  className="btn btn-app bordered"
+                  style={{ marginLeft: "5px" }}
+                  onClick={handleCopyLinkClick}
                 >
-                  <i className="fab fa-whatsapp"></i> WhatsApp
-                </Link>
-              </Button>
-              <Button variant="primary" className="mr-2">
-                <Link
-                  href="https://www.facebook.com/sharer/sharer.php?u=URL_Artikel"
-                  target="_blank"
-                  className="text-white"
+                  <span className="bi bi-clipboard"></span> Salin Link
+                </button>
+                <Dialog
+                  open={copyLinkOpen}
+                  onClose={() => setCopyLinkOpen(false)}
+                  style={{ zIndex: "1" }}
                 >
-                  <i className="fab fa-facebook"></i> Facebook
-                </Link>
-              </Button>
-              <Button variant="info" className="mr-2">
-                <Link
-                  href="https://telegram.me/share/url?url=URL_Artikel&text=Judul%20Artikel"
-                  target="_blank"
-                  className="text-white"
-                >
-                  <i className="fab fa-telegram"></i> Telegram
-                </Link>
-              </Button>
-              <Button variant="secondary">
-                <Link
-                  href="#"
-                  onClick={() => {
-                    navigator.clipboard.writeText("URL_Artikel");
-                  }}
-                >
-                  <i className="fas fa-copy"></i> Copy Link
-                </Link>
-              </Button> */}
+                  <DialogTitle style={{ color: "white" }} className="bg-app2">
+                    copied to clipboard
+                  </DialogTitle>
+                  <DialogContent>
+                    <div style={{ marginBottom: "16px" }}>
+                      <h5>Link:</h5>
+                      <div className="input-group">
+                        <input
+                          className="form-control"
+                          value={`${myAppLink}/view/${articles.slug}`}
+                          placeholder={`${myAppLink}/view/${articles.slug}`}
+                          readOnly
+                        />
+                        <IconButton
+                          onClick={() =>
+                            handleCopyClick(
+                              `${myAppLink}/view/${articles.slug}`
+                            )
+                          }
+                        >
+                          <FileCopyIcon />
+                        </IconButton>
+                      </div>
+                    </div>
+                    <div>
+                      <h5>Short Link:</h5>
+                      <div className="input-group">
+                        <input
+                          className="form-control"
+                          value={`${myAppLink}/s/${articles.id}`}
+                          placeholder={`${myAppLink}/s/${articles.id}`}
+                          readOnly
+                        />
+                        <IconButton
+                          onClick={() =>
+                            handleCopyClick(`${myAppLink}/s/${articles.id}`)
+                          }
+                        >
+                          <FileCopyIcon />
+                        </IconButton>
+                      </div>
+                    </div>
+                  </DialogContent>
+                  <DialogActions
+                    style={{
+                      borderTop: "1px solid #ccc",
+                    }}
+                    className="bg-app2"
+                  >
+                    <Button
+                      className="btn-dark"
+                      onClick={() => setCopyLinkOpen(false)}
+                      style={{ color: "white" }}
+                    >
+                      Tutup
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </div>
             </Col>
             <Col className="col-12 col-md-4 pt-1">

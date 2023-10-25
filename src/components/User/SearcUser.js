@@ -22,6 +22,7 @@ export default function FullScreenDialog() {
   const [open, setOpen] = React.useState(false);
   const [searchResults, setSearchResults] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [searched, setSearched] = React.useState(false); // Menyimpan status pencarian
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -29,13 +30,15 @@ export default function FullScreenDialog() {
 
   const handleClose = () => {
     setOpen(false);
+    setSearched(false); // Reset status pencarian saat dialog ditutup
+    setSearchQuery(""); // Reset query pencarian saat dialog ditutup
   };
 
   const handleSearch = async () => {
-    console.log(searchResults);
     try {
       const response = await axios.get(`${searchUser}?search=${searchQuery}`);
       setSearchResults(response.data);
+      setSearched(true); // Set status pencarian setelah pencarian dilakukan
     } catch (error) {
       console.error("Error searching:", error);
     }
@@ -87,27 +90,40 @@ export default function FullScreenDialog() {
           </Toolbar>
         </AppBar>
         <List>
-          {/* Tampilkan hasil pencarian */}
-          {searchResults.map((result) => (
-            <>
-              <Link
-                href={`/view/${result.slug}`}
-                className="nav-link"
-                onClick={handleClose}
-              >
-                <ListItem button key={result.id} className="bg-app text-light">
-                  <ListItemText primary={result.judul} />
-                  <IconButton
-                    className="text-light"
-                    onClick={() => handleDetail(result.id)}
+          {searched && searchResults.length === 0 ? (
+            <Typography
+              variant="h6"
+              component="div"
+              className="text-center mt-3"
+            >
+              Pencarian tidak ditemukan.
+            </Typography>
+          ) : (
+            searchResults.map((result) => (
+              <>
+                <Link
+                  href={`/view/${result.slug}`}
+                  className="nav-link"
+                  onClick={handleClose}
+                >
+                  <ListItem
+                    button
+                    key={result.id}
+                    className="bg-app text-light"
                   >
-                    <span className="bi bi-eye"></span>
-                  </IconButton>
-                </ListItem>
-                <Divider />
-              </Link>
-            </>
-          ))}
+                    <ListItemText primary={result.judul} />
+                    <IconButton
+                      className="text-light"
+                      onClick={() => handleDetail(result.id)}
+                    >
+                      <span className="bi bi-eye"></span>
+                    </IconButton>
+                  </ListItem>
+                  <Divider />
+                </Link>
+              </>
+            ))
+          )}
         </List>
       </Dialog>
     </div>

@@ -110,7 +110,7 @@ const UpdateArtikel = async (status) => {
         <>
         <Container className='col-md-8'>
             <Row className="mt-1">
-                <Col className='card pt-1'>
+                <Col className='card pt-1 quill' style={{position:"relative"}}>
                    {media !== `${publicApi}/` ? (
                         <>
                             {media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") ? (
@@ -147,7 +147,10 @@ const UpdateArtikel = async (status) => {
                     </em>
                     </p>
 
-                    <p className="mt-3" dangerouslySetInnerHTML={{ __html: articles.isi }} />
+                   <div className="mt-3" style={{ overflow: 'hidden', maxWidth:"100%" }}>
+                    <p dangerouslySetInnerHTML={{ __html: articles.isi }} />
+                    </div>
+
                     <div className="mt-4">
                         <Button variant="success" className="mr-2">
                             <Link href="whatsapp://send?text=Judul%20Artikel:%20URL_Artikel" target="_blank" className="text-white">

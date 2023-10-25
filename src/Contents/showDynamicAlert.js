@@ -59,7 +59,7 @@ export const showDynamicAlert = (pesan, tipe = "info") => {
       text: pesan,
       confirmButtonText: "OK",
       customClass: {
-        confirmButton: "btn btn-primary",
+        confirmButton: "btn btn-warning",
       },
     });
   }

@@ -2,10 +2,10 @@ import Image from "next/image";
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import SelectImage from "./AdminMediaForArticel";
+import SelectImage from "./SuperAdminMediaForContent";
 import { linkApi, publicApi } from "../../../utils/globals";
 
-const FileUploadCard = ({ formData }) => {
+const FileUploadCard = ({ formData, setFormData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -30,57 +30,28 @@ const FileUploadCard = ({ formData }) => {
   // const imageList = ['1.jpg','2.jpg'];
 
   return (
-    <div className="file-upload-card p-3 text-center">
-      <label htmlFor="file-upload" className="upload-button">
-        {!selectedFile && (
-          <b>
-          <Image src="/assets/svg/upload.svg" width={300} height={150} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
-          <label className="bg-light w-100"><b>Select file</b></label>
-          </b>
-        )}
-      </label>
-      {selectedFile && (
-        <div className="selected-image" style={{height:"150px"}}>
-        {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
-          // Jika formData.media adalah gambar (contoh: .jpg atau .png)
-          <Image
-            src={`${publicApi}/${formData.media}`}
-            alt="select media for content"
-            layout="fill"
-            style={{borderRadius:"10px"}}
-          />
-        ) : formData.media.endsWith('.mp4') ? (
-          // Jika formData.media adalah video (contoh: .mp4)
-          <div>
-          <video controls className="d-md-none" width="300">
-          <source src={`${publicApi}/${formData.media}`} />
-          Maaf, browser Anda tidak mendukung video ini.
-        </video>
-        <video controls className="d-none d-md-block" width="600">
-          <source src={`${publicApi}/${formData.media}`} />
-          Maaf, browser Anda tidak mendukung video ini.
-        </video>
-        </div>
-        ) : (
-          // Jika formData.media adalah jenis lain atau tidak ada media yang dipilih
-          <p>Tidak ada media yang dipilih</p>
-        )}
-        <button
-          className="close-icon"
-          onClick={handleDeleteImage}
-        >
-          &#10006;
-        </button>
-      </div>
-
-      )}
+    <div>
+          <span
+                  onClick={openModal} 
+                  // type="button"
+                  // onClick={insertImage}
+                  className="btn btn-app btn-sm"
+                  style={{
+                    position: "relative",
+                    marginBottom: "-45px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  + <span className="bi bi-image"></span>
+          </span>
 
       <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"9999"}}>
         <Modal.Header closeButton>
           <Modal.Title>Select Thumbnail</Modal.Title>
         </Modal.Header>
         <Modal.Body onClick={handleImageClick}>
-          <SelectImage kData={formData} modal={setShowModal} />
+          {/* <center className="text-danger">{!selectedFile ? "Belum ada Media, Klik Upload" : null}</center> */}
+          <SelectImage kData={formData} setKData={setFormData} modal={setShowModal} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

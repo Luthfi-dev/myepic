@@ -7,7 +7,7 @@ import { showDynamicAlert } from '../showDynamicAlert';
 import { DataUser } from "@/components/DataUser";
 import { useRouter } from "next/router";
 
-const AdminContent = ({kData, modal}) => {
+const AdminContent = ({kData, setKData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   // const [mediaData, setMediaData] = useState({ images: [], videos: [] });
@@ -23,10 +23,38 @@ const AdminContent = ({kData, modal}) => {
   const router = useRouter();
 
   const handleMediaClick = (imageName) => {
-    kData.media = imageName;
+    kData.mediacontent = imageName;
     modal(false);
-    console.log(kData);
+    const imageHtml = `
+  <div style="width: 500px; height: auto; overflow: hidden;">
+    <center><Image src="${publicApi}/${imageName}" layout="fill" alt="Inserted Image" width="500" /></center>
+  </div>
+`;
+
+const newValue = kData.quillContent + imageHtml;
+
+        setKData((prevData) => ({
+          ...prevData,
+          quillContent: newValue,
+        }));
+    console.log("ini k daya",kData);
   };
+
+  //   useEffect(() => {
+  //   const insertImage = () => {
+  //     if (formData.mediacontent) {
+  //       // Pastikan formData.mediacontent tidak kosong
+  //       const imageHtml = `<img src="https://ex.luth.my.id/${formData.mediacontent}" alt="Inserted Image" />`;
+  //       const newValue = formData.quillContent + imageHtml;
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         quillContent: newValue,
+  //       }));
+  //       // setImageUrl(""); // Mengosongkan input URL gambar setelah menyisipkan gambar
+  //     }
+  //   };
+  //   insertImage();
+  // }, [formData.mediacontent]);
 
   console.log(publicApi);
     // GET DATA API
@@ -71,7 +99,7 @@ const fetchData = async () => {
   };
 
   const handleFileUpload = async () => {
-    showDynamicAlert("Loading..", "loading");
+    // showDynamicAlert("Loading..", "loading");
     if (!selectedFiles.length) {
       alert('Pilih file terlebih dahulu');
       return;
@@ -91,11 +119,11 @@ const fetchData = async () => {
     });
 
       if (response.status === 200) { // Ubah dari response.ok menjadi response.status
-        showDynamicAlert('Media berhasil diunggah', 'successTime');
+        alert('Media berhasil diunggah');
         // router.push("/admin/media")
         fetchData(); // Pastikan bahwa fetchData() bekerja dengan benar untuk memperbarui data.
       } else {
-        showDynamicAlert('Terjadi kesalahan saat mengunggah media', "errorTime");
+        alert('Terjadi kesalahan saat mengunggah media');
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
@@ -217,10 +245,11 @@ const renderPagination = () => {
               <div className="tab-content pt-2" id="borderedTabJustifiedContent">
                 <div className={`tab-pane fade ${activeTab === 'image' ? 'active show' : ''}`} id="bordered-justified-home" role="tabpanel" aria-labelledby="image-tab">
                   <div className="row">
+                    {totalMedia === 0 ? "Media belum ada, klik upload!" : null}
                     {dataAll.map((image) => (
                       <div key={image.id} className="col-md-3 mb-3">
                         <div className="d-flex flex-column align-items-center">
-                          <Image src={`${publicApi}/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" onClick={() => handleMediaClick(image.nama)} />
+                          <Image src={`https://ex.luth.my.id/media/${image.nama}`} alt={image.id} width={200} height={200} objectFit="cover" onClick={() => handleMediaClick(image.nama)} />
                           <button onClick={() => deleteMedia(image.id)} className="btn btn-danger mt-2"><i className='bi bi-trash'></i></button>
                         </div>
                       </div>
@@ -254,7 +283,7 @@ const renderPagination = () => {
                             </div>
                             <form>
                               <div className="mb-3">
-                                <input type="file" name="nama" className="btn form-control btn-light" id="media" multiple onChange={handleFileChange} />
+                                <input type="file" name="nama" className="btn form-control btn-light" id="media" accept='.png,.jpg' multiple onChange={handleFileChange} />
                               </div>
                               <button type="button" className="btn btn-dark w-100" onClick={handleFileUpload} disabled={!isFileSelected}>Upload</button>
                             </form>

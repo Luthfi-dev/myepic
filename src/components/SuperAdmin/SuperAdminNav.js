@@ -73,7 +73,7 @@ const SuperAdminNav = () => {
                 </Link>
               </li>
 
-              <li>
+              {/* <li>
                 <Link href="/super-admin/category" legacyBehavior>
                   <a>
                     <span>
@@ -85,7 +85,7 @@ const SuperAdminNav = () => {
                     </span>
                   </a>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </li>
 

@@ -115,8 +115,8 @@ const CardPopuler = () => {
               sx={{
                 height: "40px",
                 width: "100%",
-                background: "url(/assets/svg/component/label-header.svg)",
-                color: "white",
+                // background: "url(/assets/svg/component/label-header.svg)",
+                // color: "white",
                 marginLeft: "-5px",
               }}
             />
@@ -134,7 +134,7 @@ const CardPopuler = () => {
                       <ListItemText
                         primary={
                           <Typography
-                            style={{ color: "black" }}
+                            className="color-app2"
                             sx={
                               window.innerWidth <= 600
                                 ? {
