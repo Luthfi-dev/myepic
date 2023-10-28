@@ -23,3 +23,11 @@ export const searchUser = `${myAppLinkApi}/api/search`;
 export const managUser = `${myAppLinkApi}/api/manag/user`;
 
 export const menuApi = `${myAppLinkApi}/menu/read-menu/parent`;
+
+// SSO
+export const GOOGLE_CLIENT_ID =
+  "943624068454-oo58hl2hh7ft9kv4m2t5l4fvslbq96ah.apps.googleusercontent.com";
+
+//   SSO MS
+export const tenan_ID = "0c0b2313-eede-47e4-a111-39d91bc0e1df";
+export const client_ID = "e9057dbd-9a29-4966-9a54-02199fbf4da6";
