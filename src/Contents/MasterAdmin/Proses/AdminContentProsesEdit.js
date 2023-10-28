@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../MasterUploadFileEdit";
+import FileUploadMediaContent from "../MasterUploadFileMediaContent";
 import {
   artikelApi,
   artikelPageApi,
