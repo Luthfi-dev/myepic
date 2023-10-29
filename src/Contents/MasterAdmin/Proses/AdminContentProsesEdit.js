@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../MasterUploadFileEdit";
+import FileUploadMediaContent from "../MasterUploadFileMediaContent";
 import {
   artikelApi,
   artikelPageApi,
@@ -287,9 +288,9 @@ const MyForm = () => {
           kategori: formData.kategori,
           isi: formData.quillContent,
           tags: `${formData.tags}`,
+          editor: `${formData.editor}`,
           slug: formData.slugg,
           user_id: dataArtikel.user_id,
-          editor: "999",
           status: dataBaruFix,
         };
         const response = await fifiAxios.put(
@@ -348,7 +349,8 @@ const MyForm = () => {
       tags: `${formData.tags}`,
       slug: formData.slugg,
       user_id: dataArtikel.user_id,
-      status: "diterima",
+      editor: UserId,
+      status: "pra-terima",
     };
 
     // hentikan post jika data kosong
@@ -484,23 +486,27 @@ const MyForm = () => {
 
           <div className="row">
             <div className="col-xxl-12 col-md-12">
-              <div
-                className="card info-card sales-card p-1"
-                style={{ height: "600px" }}
-              >
+              <div className="" style={{ height: "800px", overflow: "hidden" }}>
+                <FileUploadMediaContent
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+
                 <QuillEditor
                   modules={modules}
                   value={formData.quillContent}
                   onChange={handleQuillChange}
                   onBlur={tidaFokuslagi}
                   style={{
-                    height: "500px",
+                    width: "100%",
+                    height: "100%",
                     backgroundColor: "white",
-                    borderRadius: "5px",
+                    margin: "0",
+                    marginTop: "-20px",
+                    border: "none",
                     padding: "10px",
-                    maxHeight: "500px",
                     scrollbarColor: "darkgray lightgray",
-                    scrollbarWidth: "thin",
+                    scrollbarWidth: "auto",
                   }}
                 />
               </div>
@@ -622,7 +628,7 @@ const MyForm = () => {
                         className="form-control"
                         value={formData.tags}
                         onChange={handleTagsChange}
-                        onBlur={handleTagsChange}
+                        onBlur={tidaFokuslagi}
                       />
                       <span
                         className="text-success"

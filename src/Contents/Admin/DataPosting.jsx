@@ -20,15 +20,16 @@ const DataPosting = () => {
   const fetchData = async () => {
       if(myUser !== null){
           try {
-            const countResponse = await fifiAxios.get(`${artikelPageApi}`);
+            const countResponse = await fifiAxios.get(`${artikelPageApi}?id_user=${UserId}`);
             const countData = countResponse.data;
             const totalCount = countData.total;
             setTotalMedia(totalCount);
+            console.log(totalCount)
 
             const response = await fifiAxios.get(
               activeTab === 'draf'
                 ? `${artikelPageApi}?status=draf&page=${currentPage}&search=${searchText}&id_user=${UserId}` 
-                : `${artikelPageApi}?jumlah=10&page=${currentPage}&search=${searchText}&id_user=${UserId}`
+                : `${artikelPageApi}?jumlah=20&page=${currentPage}&search=${searchText}&id_user=${UserId}`
             );
 
             console.log(response);
@@ -41,6 +42,7 @@ const DataPosting = () => {
 
             setTotalMedia(dataAmbil.total);
             setDataAll(filteredDataAll);
+            console.log(dataAll)
           } catch (error) {
             console.error('Terjadi kesalahan:', error);
           }
@@ -98,33 +100,26 @@ const DataPosting = () => {
           <div className="row">
             <div className="col-lg-10">
               <Link href={`view-artikel?id=${id}`}>
-            {media ? (
-              isImage ? (
+            {
+              media !== "" ? (
                 <Image
                   width={100}
                   height={80}
                   objectFit="contain"
                   src={`${publicApi}/${media}`}
-                  alt="foto thunbnail"
+                  alt="foto thumbnail"
                 />
               ) : (
                 <Image
                   width={100}
-                  height={80}
+                  height={50}
                   objectFit="contain"
-                  src={`${publicApi}/default/thum_video.png`}
-                  alt="video  thunbnail"
+                  src={`${publicApi}/default/no_picture.png`}
+                  alt="foto thumbnail no image"
                 />
               )
-            ) : (
-              <Image
-                width={100}
-                height={50}
-                objectFit="contain"
-                src={`${publicApi}/default/no_picture.png`}
-                alt="foto thunbnail no image"
-              />
-            )}
+            }
+
             <h4>{judul}</h4>
             <p className="text-app">
               {isi.length > 50
@@ -148,9 +143,9 @@ const DataPosting = () => {
               {item.status === "proses" || item.status === "pra-terima"
                 ? "On Review"
                 : item.status === "diterima"
-                ? "Diterima"
+                ? "Published"
                 : item.status === "ditolak"
-                ? "Ditolak"
+                ? "Rejected"
                 : ""}
             </span>
             </div>
@@ -180,7 +175,7 @@ const DataPosting = () => {
   };
 
   const renderPagination = () => {
-    const totalPages = Math.ceil(totalMedia / 10);
+    const totalPages = Math.ceil(totalMedia / 20);
 
     if (totalPages <= 1) {
       return null;

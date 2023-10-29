@@ -214,7 +214,7 @@ renderDataAllActivity(dataAllActivity)
           <div className="card info-card sales-card">
             <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown">
-                <i className="bi bi-three-dots"></i>
+                <i className="bi bi-three-dots color-app"></i>
               </a>
               
             </div>
@@ -226,11 +226,11 @@ renderDataAllActivity(dataAllActivity)
 
               <div className="d-flex align-items-center">
                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i className="bi bi-clock-history"></i>
+                  <i className="bi bi-clock-history color-app"></i>
                 </div>
                 <div className="ps-3">
                   <h6>{jumlahProses}</h6>
-                  <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
+                  <span className="text-success small pt-1 fw-bold"><b className="color-app">Postingan</b></span>{" "}
                   <span className="text-muted small pt-2 ps-1">Diproses</span>
                 </div>
               </div>
@@ -242,7 +242,7 @@ renderDataAllActivity(dataAllActivity)
           <div className="card info-card sales-card">
             <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown">
-                <i className="bi bi-three-dots"></i>
+                <i className="bi bi-three-dots color-app"></i>
               </a>
               
             </div>
@@ -254,11 +254,11 @@ renderDataAllActivity(dataAllActivity)
 
               <div className="d-flex align-items-center">
                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i className="bi bi-clipboard-check"></i>
+                  <i className="bi bi-clipboard-check color-app"></i>
                 </div>
                 <div className="ps-3">
                   <h6>{jumlahDiterima}</h6>
-                  <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
+                  <span className="text-success small pt-1 fw-bold"><b className="color-app">Postingan</b></span>{" "}
                   <span className="text-muted small pt-2 ps-1">Diterima</span>
                 </div>
               </div>
@@ -270,7 +270,7 @@ renderDataAllActivity(dataAllActivity)
           <div className="card info-card sales-card">
             <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown">
-                <i className="bi bi-three-dots"></i>
+                <i className="bi bi-three-dots color-app"></i>
               </a>
               
             </div>
@@ -282,11 +282,11 @@ renderDataAllActivity(dataAllActivity)
 
               <div className="d-flex align-items-center">
                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i className="bi bi-clipboard-x"></i>
+                  <i className="bi bi-clipboard-x color-app"></i>
                 </div>
                 <div className="ps-3">
                   <h6>{jumlahDitolak}</h6>
-                  <span className="text-success small pt-1 fw-bold">Postingan</span>{" "}
+                  <span className="text-success small pt-1 fw-bold"><b className="color-app">Postingan</b></span>{" "}
                   <span className="text-muted small pt-2 ps-1">Ditolak</span>
                 </div>
               </div>
@@ -318,7 +318,7 @@ renderDataAllActivity(dataAllActivity)
           <div className="col-xxl-4 col-md-4">
             <div className="card">
             {/* <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots color-app2"></i></a>
               <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li className="dropdown-header text-start">
                   <h6>Filter</h6>
@@ -364,7 +364,7 @@ renderDataAllActivity(dataAllActivity)
                       <div key={index} className="activity-item d-flex">
                         <div className="activite-label">{timeAgoText}</div>
                         {/* <div className="activity-label" dangerouslySetInnerHTML={{ __html: timeAgoText }}></div> */}
-                        <i className="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                        <i className="bi bi-circle-fill activity-badge text-success align-self-start color-app2"></i>
                         <div className="activity-content">
                           Posting artikel baru <a href="#" className="fw-bold text-dark">sebagai Draf</a>
                         </div>
@@ -374,7 +374,7 @@ renderDataAllActivity(dataAllActivity)
                     return (
                       <div key={index} className="activity-item d-flex">
                         <div className="activite-label">{timeAgoText}</div>
-                        <i className="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
+                        <i className="bi bi-circle-fill activity-badge text-danger align-self-start color-app2"></i>
                         <div className="activity-content">
                           Posting artikel baru <a href="#" className="fw-bold text-dark">Dalam proses verifikasi</a>
                         </div>

@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../MasterUploadFile";
+import FileUploadMediaContent from "../MasterUploadFileMediaContent";
 import {
   artikelApi,
   artikelPageApi,
   kategoriApi,
+  menuApi,
 } from "../../../../utils/globals";
 import TagInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
@@ -18,16 +20,19 @@ import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
 const modules = {
   toolbar: [
-    [{ header: "1" }, { header: "2" }, { header: "3" }, { font: [] }],
+    [],
+    [],
+    ["link", "video"],
+    [{ header: "0" }, { header: "1" }, { header: "2" }, { font: [] }],
     [{ size: [] }],
     ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ align: [] }],
     [
       { list: "ordered" },
       { list: "bullet" },
       { indent: "-1" },
       { indent: "+1" },
     ],
-    ["link", "image", "video"],
     ["clean"],
   ],
   clipboard: {
@@ -70,12 +75,11 @@ const MyForm = () => {
     type_konten: "",
     kategori: "",
     media: "",
+    mediacontent: "",
     tags: [],
     slugg: "",
     quillContent: "",
   });
-
-  // BAGIAN MENGHANDLE slugs
 
   // Fungsi untuk mengambil data dari API berdasarkan judul
   async function fetchDataFromApi(judul) {
@@ -134,12 +138,11 @@ const MyForm = () => {
       ...prevData,
       tags: newTags, // Perbarui formData.tags dengan nilai terbaru
     }));
-    // console.log(formData.tags); // Tampilkan nilai terbaru dari tags
   };
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    // console.log("Input berubah:", name, value, formData);
+    console.log("Input berubah==:", name, value, formData);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -153,6 +156,20 @@ const MyForm = () => {
         ...prevData,
         slugg: result,
       }));
+    }
+  };
+
+  const [dataSubMenu, setDataSubMenu] = useState([]);
+  const handleChangeMenu = async (nilai) => {
+    try {
+      const response = await fifiAxios.get(`${menuApi}/${nilai}`);
+      const categoryData = response.data;
+      setDataSubMenu(categoryData);
+      console.log("ini data submenu", nilai, dataSubMenu);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setDataSubMenu([]);
+      console.log("ini data submenu", nilai, dataSubMenu);
     }
   };
 
@@ -178,6 +195,23 @@ const MyForm = () => {
       }
     }
   };
+
+  // bagian handle Menu
+  const [dataMenu, setDataMenu] = useState([]);
+  const menus = async () => {
+    try {
+      const response = await fifiAxios.get(menuApi);
+      const categoryData = response.data;
+      setDataMenu(categoryData);
+      console.log(dataMenu);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    menus();
+  }, []);
 
   useEffect(() => {
     ktg();
@@ -292,7 +326,7 @@ const MyForm = () => {
       tags: `${formData.tags}`,
       slug: formData.slugg,
       user_id: UserId,
-      status: "diterima",
+      status: "pra-terima",
     };
 
     // hentikan post jika data kosong
@@ -410,33 +444,37 @@ const MyForm = () => {
       </div>
       <div className="row">
         <div className="col-lg-9">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-xxl-12 col-md-12">
               <div className="card info-card sales-card p-0">
                 <FileUploadCard formData={formData} />
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="row">
             <div className="col-xxl-12 col-md-12">
-              <div
-                className="card info-card sales-card p-1"
-                style={{ height: "600px" }}
-              >
+              <div className="" style={{ height: "800px", overflow: "hidden" }}>
+                <FileUploadMediaContent
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+
                 <QuillEditor
                   modules={modules}
                   value={formData.quillContent}
                   onChange={handleQuillChange}
                   onBlur={tidaFokuslagi}
                   style={{
-                    height: "500px",
+                    width: "100%",
+                    height: "100%",
                     backgroundColor: "white",
-                    borderRadius: "5px",
+                    margin: "0",
+                    marginTop: "-20px",
+                    border: "none",
                     padding: "10px",
-                    maxHeight: "500px",
                     scrollbarColor: "darkgray lightgray",
-                    scrollbarWidth: "thin",
+                    scrollbarWidth: "auto",
                   }}
                 />
               </div>
@@ -447,7 +485,16 @@ const MyForm = () => {
         <div className="col-lg-3">
           <div className="col-xxl-12 col-md-12">
             <div className="card info-card sales-card p-2">
-              <h4>Tipe Konten</h4>
+              <h4>Thumbnail</h4>
+              <div className="row p-3">
+                <FileUploadCard formData={formData} />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <h4>Menu</h4>
               <hr />
               <div className="row">
                 <div className="col-lg-2">
@@ -455,20 +502,61 @@ const MyForm = () => {
                 </div>
                 <div className="col-lg-10">
                   <select
-                    name="type_konten"
-                    id="type_konten"
+                    name="menu"
+                    id="menu"
                     className="form-control"
-                    value={formData.type_konten}
-                    onChange={handleChange}
+                    value={formData.menu}
                     onBlur={tidaFokuslagi}
+                    onChange={(e) =>
+                      handleChangeMenu(
+                        e.target.value,
+                        e.target.selectedOptions[0].getAttribute("data-id")
+                      )
+                    }
                   >
-                    <option readOnly>--Pilih Tipe--</option>
-                    <option value="teks">Teks</option>
-                    <option value="foto">Foto</option>
-                    <option value="video">Video</option>
+                    <option disabled>--Pilih menu--</option>
+                    {dataMenu.map((item) => (
+                      <option key={item.id} value={item.id} data-id={item.id}>
+                        {item.title}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
+              {dataSubMenu.length > 0 ? (
+                <div className="row">
+                  <div className="col-lg-3"></div>
+                  <div className="col-lg-1">
+                    <span
+                      className="bi bi-arrow-return-right float-right"
+                      style={{ fontSize: "30px" }}
+                    ></span>
+                  </div>
+                  <div className="col-lg-8">
+                    <select
+                      name="type_konten"
+                      id="type_konten"
+                      className="form-control"
+                      value={formData.type_konten}
+                      onBlur={tidaFokuslagi}
+                      onChange={handleChange}
+                      // onChange={(e) =>
+                      //   handleChangesubmenu(
+                      //     e.target.value,
+                      //     e.target.selectedOptions[0].getAttribute("data-id")
+                      //   )
+                      // }
+                    >
+                      <option disabled>++ Pilih Sub menu ++</option>
+                      {dataSubMenu.map((item) => (
+                        <option key={item.id} value={item.title}>
+                          {item.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -551,11 +639,12 @@ const MyForm = () => {
                   >
                     <div className="accordion-body">
                       <TagInput
+                        type="text"
                         id="Tags"
                         className="form-control"
                         value={tags}
                         onChange={handleTagsChange}
-                        onBlur={handleTagsChange}
+                        onBlur={tidaFokuslagi}
                       />
                       <span
                         className="text-success"

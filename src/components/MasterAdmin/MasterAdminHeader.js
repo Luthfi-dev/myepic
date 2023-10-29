@@ -99,7 +99,17 @@ const MasterAdminHeader = () => {
       <div className="d-flex align-items-center justify-content-between">
         <Link href="index.html" className="logo d-flex align-items-center">
           <Image src="/assets/img/logo.png" alt="" width={40} height={50} />
-          <span className="d-none d-lg-block">Thinkepic</span>
+          <span
+            className="d-none d-lg-block"
+            // style={{ backgroundImage: "url(/assets/img/logo-text.png)" }}
+          >
+            <Image
+              src="/assets/img/logotext.PNG"
+              alt="logo epic"
+              width={150}
+              height={80}
+            />
+          </span>
         </Link>
         <i
           className="bi bi-list toggle-sidebar-btn"

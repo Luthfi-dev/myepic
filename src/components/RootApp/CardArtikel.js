@@ -134,6 +134,7 @@ const CardArtikel = ({ pKategori, categories }) => {
                 height: "50px",
                 width: "100%",
                 background: "url(/assets/svg/component/label-header.svg)",
+                backgroundRepeat: "no-repeat",
                 color: "white",
                 marginLeft: "-5px",
               }}
@@ -182,19 +183,18 @@ const CardArtikel = ({ pKategori, categories }) => {
                         <ListItemText
                           primary={
                             <Typography
+                              className="color-app2"
                               sx={
                                 window.innerWidth <= 600
                                   ? {
                                       fontSize: "12pt",
                                       fontWeight: "bold",
                                       lineHeight: "1",
-                                      color: "#4352EF",
                                     }
                                   : {
                                       fontSize: "16pt",
                                       fontWeight: "bold",
                                       lineHeight: "1",
-                                      color: "#4352EF",
                                     }
                               }
                               gutterBottom

@@ -9,6 +9,7 @@ const FileUploadCard = ({ formData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+
   const openModal = () => {
     setShowModal(true);
   };
@@ -33,13 +34,13 @@ const FileUploadCard = ({ formData }) => {
       <label htmlFor="file-upload" className="upload-button">
         {!selectedFile && (
           <b>
-          <Image src="/assets/svg/upload.svg" width={300} height={300} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
+          <Image src="/assets/svg/upload.svg" width={300} height={150} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
           <label className="bg-light w-100"><b>Select file</b></label>
           </b>
         )}
       </label>
       {selectedFile && (
-        <div className="selected-image" style={{height:"300px"}}>
+        <div className="selected-image" style={{height:"150px"}}>
         {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
           // Jika formData.media adalah gambar (contoh: .jpg atau .png)
           <Image
@@ -51,11 +52,11 @@ const FileUploadCard = ({ formData }) => {
         ) : formData.media.endsWith('.mp4') ? (
           // Jika formData.media adalah video (contoh: .mp4)
           <div>
-          <video controls className="d-md-none" width="300" height="300">
+          <video controls className="d-md-none" width="300">
           <source src={`${publicApi}/${formData.media}`} />
           Maaf, browser Anda tidak mendukung video ini.
         </video>
-        <video controls className="d-none d-md-block" width="600" height="500">
+        <video controls className="d-none d-md-block" width="600">
           <source src={`${publicApi}/${formData.media}`} />
           Maaf, browser Anda tidak mendukung video ini.
         </video>
@@ -74,11 +75,12 @@ const FileUploadCard = ({ formData }) => {
 
       )}
 
-      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"999999999"}}>
+      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"9999"}}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Media</Modal.Title>
+          <Modal.Title>Select Thumbnail</Modal.Title>
         </Modal.Header>
         <Modal.Body onClick={handleImageClick}>
+          {/* <center className="text-danger">{!selectedFile ? "Belum ada Media, Klik Upload" : null}</center> */}
           <SelectImage kData={formData} modal={setShowModal} />
         </Modal.Body>
         <Modal.Footer>

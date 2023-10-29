@@ -99,7 +99,17 @@ const AdminHeader = () => {
       <div className="d-flex align-items-center justify-content-between">
         <Link href="index.html" className="logo d-flex align-items-center">
           <Image src="/assets/img/logo.png" alt="" width={40} height={50} />
-          <span className="d-none d-lg-block">Thinkepic</span>
+          <span
+            className="d-none d-lg-block"
+            // style={{ backgroundImage: "url(/assets/img/logo-text.png)" }}
+          >
+            <Image
+              src="/assets/img/logotext.PNG"
+              alt="logo epic"
+              width={150}
+              height={80}
+            />
+          </span>
         </Link>
         <i
           className="bi bi-list toggle-sidebar-btn"
@@ -146,7 +156,7 @@ const AdminHeader = () => {
               data-bs-toggle="dropdown"
             >
               <i className="bi bi-bell"></i>
-              <span className="badge bg-primary badge-number">
+              <span className="badge bg-app badge-number">
                 {totalNotifications}
               </span>
             </Link>
@@ -157,7 +167,7 @@ const AdminHeader = () => {
                 Kamu punya {totalNotifications} notifikasi
                 {notifications.length > 0 ? (
                   <Link href="/super-admin/notifikasi">
-                    <span className="badge rounded-pill bg-primary p-2 ms-2">
+                    <span className="badge rounded-pill bg-app p-2 ms-2">
                       View all
                     </span>
                   </Link>

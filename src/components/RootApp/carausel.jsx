@@ -10,19 +10,10 @@ const ImageCarousel = () => {
   const slides = [
     {
       imageSrc: '/assets/gambar/slide/1.jpg',
-      label: 'Slide pertama',
+      label: 'Hello World',
       description: 'Description for slide pertama.',
     },
-    {
-      imageSrc: '/assets/gambar/slide/2.jpg',
-      label: 'Slide kedua',
-      description: 'Description for slide kedua.',
-    },
-    {
-      imageSrc: '/assets/gambar/slide/3.jpg',
-      label: 'Slide ketiga',
-      description: 'Description for slide ketiga.',
-    },
+    
   ];
 
   function setWidthBasedOnScreen() {

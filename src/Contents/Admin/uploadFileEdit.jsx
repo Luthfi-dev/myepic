@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import SelectImage from "./AdminMediaForArticel";
 import { linkApi, publicApi } from "../../../utils/globals";
 
-const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
+const FileUploadCard = ({ formData, setFormData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -21,16 +21,21 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
       setSelectedFile(true);
   }
 
+const handleDeleteImage = () => {
+  setFormData((prevData) => ({ ...prevData, media: "" }));
+};
+
+
   return (
     <div className="file-upload-card p-3 text-center">
       <label htmlFor="file-upload" className="upload-button">
         {!formData.media ? (
           <b>
-            <Image src="/assets/svg/upload.svg" width={300} height={300} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
+            <Image src="/assets/svg/upload.svg" width={300} height={150} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
             <label className="bg-light w-100"><b>Select file</b></label>
           </b>
         ) : (
-          <div className="selected-image" style={{height:"300px"}}>
+          <div className="selected-image" style={{height:"150px"}}>
             {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
               // Jika formData.media adalah gambar (contoh: .jpg atau .png)
               <Image
@@ -42,7 +47,7 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
             ) : formData.media.endsWith('.mp4') ? (
               // Jika formData.media adalah video (contoh: .mp4)
               <div>
-                <video controls className="d-md-none" width="300">
+                <video controls className="d-md-none" width="200">
                   <source src={`${publicApi}/${formData.media}`} />
                   Maaf, browser Anda tidak mendukung video ini.
                 </video>
@@ -57,7 +62,7 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
             )}
             <button
               className="close-icon"
-              onClick={() => onDeleteImage()}
+              onClick={() => handleDeleteImage()}
             >
               &#10006;
             </button>

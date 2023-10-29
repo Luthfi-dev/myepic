@@ -2,12 +2,13 @@ import Image from "next/image";
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import SelectImage from "./SuperAdminMediaForArticel";
+import SelectImage from "./SuperAdminMediaForContent";
 import { linkApi, publicApi } from "../../../utils/globals";
 
-const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
+const FileUploadCard = ({ formData, setFormData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
 
   const openModal = () => {
     setShowModal(true);
@@ -18,59 +19,39 @@ const FileUploadCard = ({ formData, onImageChange, onDeleteImage }) => {
   };
 
   const handleImageClick = () => {
-        setSelectedFile(true)
+    // setShowModal(false);
+    setSelectedFile(true)
   }
 
-  return (
-    <div className="file-upload-card p-3 text-center">
-      <label htmlFor="file-upload" className="upload-button">
-        {!formData.media ? (
-          <b>
-            <Image src="/assets/svg/upload.svg" width={300} height={300} objectFit="contain" onClick={openModal} alt="logo upload postingan" />
-            <label className="bg-light w-100"><b>Select file</b></label>
-          </b>
-        ) : (
-          <div className="selected-image" style={{height:"300px"}}>
-            {formData.media.endsWith('.jpg') || formData.media.endsWith('.png') ? (
-              // Jika formData.media adalah gambar (contoh: .jpg atau .png)
-              <Image
-                src={`${publicApi}/${formData.media}`}
-                alt="select media for content"
-                layout="fill"
-                style={{borderRadius:"10px"}}
-              />
-            ) : formData.media.endsWith('.mp4') ? (
-              // Jika formData.media adalah video (contoh: .mp4)
-              <div>
-                <video controls className="d-md-none" width="300" height="300">
-                  <source src={`${publicApi}/${formData.media}`} />
-                  Maaf, browser Anda tidak mendukung video ini.
-                </video>
-                <video controls className="d-none d-md-block" width="500">
-                  <source src={`${publicApi}/${formData.media}`} />
-                  Maaf, browser Anda tidak mendukung video ini.
-                </video>
-              </div>
-            ) : (
-              // Jika formData.media adalah jenis lain atau tidak ada media yang dipilih
-              <p>Tidak ada media yang dipilih</p>
-            )}
-            <button
-              className="close-icon"
-              onClick={() => onDeleteImage()}
-            >
-              &#10006;
-            </button>
-          </div>
-        )}
-      </label>
+  const handleDeleteImage = () => {
+    setSelectedFile(null);
+  };
 
-      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"999999999"}}>
+  // const imageList = ['1.jpg','2.jpg'];
+
+  return (
+    <div>
+          <span
+                  onClick={openModal} 
+                  // type="button"
+                  // onClick={insertImage}
+                  className="btn btn-app btn-sm"
+                  style={{
+                    position: "relative",
+                    marginBottom: "-85px",
+                    marginLeft: "5px",
+                  }}
+                >
+                  + <span className="bi bi-image"></span>
+          </span>
+
+      <Modal show={showModal} onHide={closeModal} className="modal-xl" style={{zIndex:"9999"}}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Media</Modal.Title>
+          <Modal.Title>Select Thumbnail</Modal.Title>
         </Modal.Header>
         <Modal.Body onClick={handleImageClick}>
-          <SelectImage kData={formData} modal={setShowModal} onImageSelect={(newImage) => onImageChange(newImage)} />
+          <center className="text-danger">{!selectedFile ? "Belum ada Media, Klik Upload" : null}</center>
+          <SelectImage kData={formData} setKData={setFormData} modal={setShowModal} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-// import fifiAxios from "./axios-config";
-import { useState } from "react";
-import jwt from "jsonwebtoken";
-import CryptoJS from "crypto-js";
+import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
+
+// import { appWithTranslation } from "next-i18next";
+// import { useTranslation } from "react-i18next";
+// import i18n from "@/components/MyTranslate";
+// import { Trans } from "react-i18next";
 
 import "../public/assets/vendor/bootstrap/css/bootstrap.min.css";
 import "../public/assets/vendor/bootstrap-icons/bootstrap-icons.css";
@@ -25,13 +27,18 @@ import "@fontsource/roboto/700.css";
 function MyApp({ Component, pageProps }) {
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
       <NextNProgress
-        color="#4352EF"
+        color="#E73539"
         startPosition={0.3}
         stopDelayMs={1000}
         height={3}
       />
+      {/* <Trans> */}
       <Component {...pageProps} />
+      {/* </Trans> */}
     </>
   );
 }

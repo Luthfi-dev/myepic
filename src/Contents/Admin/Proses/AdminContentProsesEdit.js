@@ -4,14 +4,17 @@ import React, { useState, useEffect } from "react";
 const axios = require("axios");
 import { v4 as uuidv4 } from "uuid";
 import FileUploadCard from "../uploadFileEdit";
+import FileUploadMediaContent from "../uploadFileMediaContent";
 import {
   artikelApi,
   artikelPageApi,
   kategoriApi,
+  menuApi,
 } from "../../../../utils/globals";
 import TagInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 import { useRouter } from "next/router";
+import { DataUser } from "@/components/DataUser";
 
 import dynamic from "next/dynamic";
 import configureAxios from "../../../../pages/axios-config";
@@ -19,16 +22,19 @@ import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 
 const modules = {
   toolbar: [
-    [{ header: "1" }, { header: "2" }, { header: "3" }, { font: [] }],
+    [],
+    [],
+    ["link", "video"],
+    [{ header: "0" }, { header: "1" }, { header: "2" }, { font: [] }],
     [{ size: [] }],
     ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ align: [] }],
     [
       { list: "ordered" },
       { list: "bullet" },
       { indent: "-1" },
       { indent: "+1" },
     ],
-    ["link", "image", "video"],
     ["clean"],
   ],
   clipboard: {
@@ -47,6 +53,8 @@ const MyForm = () => {
   const { id } = router.query;
 
   const fifiAxios = configureAxios();
+  const myUser = DataUser();
+  const UserId = myUser !== null ? myUser.id_user : null;
 
   useEffect(() => {
     // Fungsi untuk menangani peristiwa scroll
@@ -115,11 +123,11 @@ const MyForm = () => {
       };
 
       fetchArticleData();
+      console.log("data atikel", dataArtikel);
     }
   }, [id]);
 
   // console.log(formData);
-  console.log("data atikel", dataArtikel);
   // BAGIAN MENGHANDLE slugs
 
   // Fungsi untuk mengambil data dari API berdasarkan judul
@@ -179,12 +187,11 @@ const MyForm = () => {
       ...prevData,
       tags: newTags, // Perbarui formData.tags dengan nilai terbaru
     }));
-    // console.log(formData.tags); // Tampilkan nilai terbaru dari tags
   };
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    // console.log("Input berubah:", name, value, formData);
+    console.log("Input berubah==:", name, value, formData);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -201,6 +208,20 @@ const MyForm = () => {
     }
   };
 
+  const [dataSubMenu, setDataSubMenu] = useState([]);
+  const handleChangeMenu = async (nilai) => {
+    try {
+      const response = await fifiAxios.get(`${menuApi}/${nilai}`);
+      const categoryData = response.data;
+      setDataSubMenu(categoryData);
+      console.log("ini data submenu", nilai, dataSubMenu);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setDataSubMenu([]);
+      console.log("ini data submenu", nilai, dataSubMenu);
+    }
+  };
+
   const handleQuillChange = (value) => {
     const i_foto = document.getElementById("n_foto");
     // console.log("Input berubah:", value, formData);
@@ -213,33 +234,37 @@ const MyForm = () => {
   // bagian handle kategori
   const [dataKategori, setDataKategori] = useState([]);
   const ktg = async () => {
+    if (myUser !== null) {
+      try {
+        const response = await fifiAxios.get(kategoriApi);
+        const categoryData = response.data;
+        setDataKategori(categoryData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
+
+  // bagian handle Menu
+  const [dataMenu, setDataMenu] = useState([]);
+  const menus = async () => {
     try {
-      const response = await fifiAxios.get(kategoriApi);
+      const response = await fifiAxios.get(menuApi);
       const categoryData = response.data;
-      setDataKategori(categoryData);
+      setDataMenu(categoryData);
+      console.log(dataMenu);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    ktg();
+    menus();
   }, []);
 
-  // fungsi baru untuk gambar edit
-  const handleImageChange = (newImage) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      media: newImage, // Update media dengan gambar baru
-    }));
-  };
-
-  const handleImageDelete = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      media: "", // Hapus gambar
-    }));
-  };
+  useEffect(() => {
+    ktg();
+  }, [myUser]);
 
   // FUNGSI onBlur
   const tidaFokuslagi = async () => {
@@ -258,10 +283,15 @@ const MyForm = () => {
       }, 3000);
       // END DRAF INFO
 
+      // Update keterangan Draf
+      document.querySelector("#ketDraf").innerHTML = "Tersimpan";
+
       const adaYangSama = hasilData.some((item) => item.id === formData.id);
-      console.log("samaa", adaYangSama);
+      // console.log("samaa", adaYangSama);
 
       if (adaYangSama) {
+        // Update keterangan public
+        document.querySelector("#ketPublic").innerHTML = "Private (Draf)";
         // sebelum di put cek dulu status artikelnya
         const responseStatus = await fifiAxios.get(
           `${artikelPageApi}?id=${formData.id}`,
@@ -283,7 +313,7 @@ const MyForm = () => {
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: dataArtikel.user_id,
+          user_id: UserId,
           status: dataBaruFix,
         };
         const response = await fifiAxios.put(
@@ -295,7 +325,7 @@ const MyForm = () => {
             },
           }
         );
-        console.log("update", response);
+        // console.log("update", response);
         return true;
       } else {
         // Contoh penggunaan
@@ -308,15 +338,15 @@ const MyForm = () => {
           isi: formData.quillContent,
           tags: `${formData.tags}`,
           slug: formData.slugg,
-          user_id: dataArtikel.user_id,
-          status: "draf",
+          user_id: UserId,
+          status: "proses",
         };
         const response = await fifiAxios.post(artikelApi, dataToSend, {
           headers: {
             "Content-Type": "application/json",
           },
         });
-        console.log("post", response);
+        // console.log("post", response);
         return false;
       }
     } catch (error) {
@@ -329,7 +359,10 @@ const MyForm = () => {
     e.preventDefault();
     showDynamicAlert("Loading..", "loading");
     const tidakFokus = await tidaFokuslagi();
-    console.log(tidakFokus);
+    // console.log(tidakFokus);
+
+    // update ket public
+    document.querySelector("#ketPublic").innerHTML = "Private (OnReview)";
 
     // Contoh penggunaan
     const dataToSend = {
@@ -341,7 +374,7 @@ const MyForm = () => {
       isi: formData.quillContent,
       tags: `${formData.tags}`,
       slug: formData.slugg,
-      user_id: dataArtikel.user_id,
+      user_id: UserId,
       status: "proses",
     };
 
@@ -353,7 +386,7 @@ const MyForm = () => {
     ) {
       showDynamicAlert(
         "kolom judul, isi postingan dan tags tidak boleh kosong",
-        "warning"
+        "error"
       );
       return;
     }
@@ -377,10 +410,8 @@ const MyForm = () => {
 
         if (response.status === 200) {
           showDynamicAlert(
-            `Data berhasil ${
-              apiMethod === "post" ? "disimpan" : "diupdate"
-            } ke API`,
-            "success"
+            `Data berhasil Dikirim untuk Diverifikasi`,
+            "successTime"
           );
         } else {
           throw new Error("Gagal mengirim data ke API");
@@ -393,7 +424,7 @@ const MyForm = () => {
     }
 
     postDataToAPI(dataToSend);
-    console.log(dataToSend);
+    // console.log(dataToSend);
 
     // END MENYIMPAN DATA KE API
   };
@@ -462,39 +493,37 @@ const MyForm = () => {
       </div>
       <div className="row">
         <div className="col-lg-9">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-xxl-12 col-md-12">
               <div className="card info-card sales-card p-0">
-                {/* // Render komponen FileUploadCard dengan prop yang sesuai */}
-                <FileUploadCard
-                  formData={formData}
-                  onImageChange={handleImageChange}
-                  onDeleteImage={handleImageDelete}
-                  onBlur={tidaFokuslagi}
-                />
+                <FileUploadCard formData={formData} />
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="row">
             <div className="col-xxl-12 col-md-12">
-              <div
-                className="card info-card sales-card p-1"
-                style={{ height: "600px" }}
-              >
+              <div className="" style={{ height: "800px", overflow: "hidden" }}>
+                <FileUploadMediaContent
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+
                 <QuillEditor
                   modules={modules}
                   value={formData.quillContent}
                   onChange={handleQuillChange}
                   onBlur={tidaFokuslagi}
                   style={{
-                    height: "500px",
+                    width: "100%",
+                    height: "100%",
                     backgroundColor: "white",
-                    borderRadius: "5px",
+                    margin: "0",
+                    marginTop: "-20px",
+                    border: "none",
                     padding: "10px",
-                    maxHeight: "500px",
                     scrollbarColor: "darkgray lightgray",
-                    scrollbarWidth: "thin",
+                    scrollbarWidth: "auto",
                   }}
                 />
               </div>
@@ -502,10 +531,20 @@ const MyForm = () => {
           </div>
         </div>
 
-        <div className="col-lg-3">
+        <div className="col-lg-3 mt-3">
+          <h4>Thumbnail</h4>
+
           <div className="col-xxl-12 col-md-12">
             <div className="card info-card sales-card p-2">
-              <h4>Tipe Konten</h4>
+              <div className="row p-3">
+                <FileUploadCard formData={formData} setFormData={setFormData} />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-xxl-12 col-md-12">
+            <div className="card info-card sales-card p-2">
+              <h4>Menu</h4>
               <hr />
               <div className="row">
                 <div className="col-lg-2">
@@ -513,23 +552,63 @@ const MyForm = () => {
                 </div>
                 <div className="col-lg-10">
                   <select
-                    name="type_konten"
-                    id="type_konten"
+                    name="menu"
+                    id="menu"
                     className="form-control"
-                    value={formData.type_konten}
-                    onChange={handleChange}
+                    value={formData.menu}
                     onBlur={tidaFokuslagi}
+                    onChange={(e) =>
+                      handleChangeMenu(
+                        e.target.value,
+                        e.target.selectedOptions[0].getAttribute("data-id")
+                      )
+                    }
                   >
-                    <option readOnly>--Pilih Tipe--</option>
-                    {formData.type_konten !== "" && (
-                      <option value="teks">{formData.type_konten}</option>
-                    )}
-                    <option value="teks">teks</option>
-                    <option value="foto">foto</option>
-                    <option value="video">video</option>
+                    <option value={formData.type_konten}>
+                      {formData.type_konten}
+                    </option>
+                    {dataMenu.map((item) => (
+                      <option key={item.id} value={item.id} data-id={item.id}>
+                        {item.title}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
+              {dataSubMenu.length > 0 ? (
+                <div className="row">
+                  <div className="col-lg-3"></div>
+                  <div className="col-lg-1">
+                    <span
+                      className="bi bi-arrow-return-right float-right"
+                      style={{ fontSize: "30px" }}
+                    ></span>
+                  </div>
+                  <div className="col-lg-8">
+                    <select
+                      name="type_konten"
+                      id="type_konten"
+                      className="form-control"
+                      value={formData.type_konten}
+                      onBlur={tidaFokuslagi}
+                      onChange={handleChange}
+                      // onChange={(e) =>
+                      //   handleChangesubmenu(
+                      //     e.target.value,
+                      //     e.target.selectedOptions[0].getAttribute("data-id")
+                      //   )
+                      // }
+                    >
+                      <option disabled>++ Pilih Sub menu ++</option>
+                      {dataSubMenu.map((item) => (
+                        <option key={item.id} value={item.title}>
+                          {item.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -612,11 +691,12 @@ const MyForm = () => {
                   >
                     <div className="accordion-body">
                       <TagInput
+                        type="text"
                         id="Tags"
                         className="form-control"
                         value={formData.tags}
                         onChange={handleTagsChange}
-                        onBlur={handleTagsChange}
+                        onBlur={tidaFokuslagi}
                       />
                       <span
                         className="text-success"
@@ -695,10 +775,10 @@ const MyForm = () => {
                   >
                     <div className="accordion-body">
                       <div className="container mt-2">
-                        Draf : <b>Tersimpan</b>
+                        Draf : <b id="ketDraf">Belum Tersimpan</b>
                       </div>
                       <div className="container mt-2">
-                        Visibilitas : <b>Private</b>
+                        Visibilitas : <b id="ketPublic">Private</b>
                       </div>
                     </div>
                   </div>

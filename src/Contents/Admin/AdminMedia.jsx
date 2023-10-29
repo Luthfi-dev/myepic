@@ -4,6 +4,8 @@ import { linkApi, publicApi } from '../../../utils/globals';
 import Link from 'next/link';
 import configureAxios from "../../../pages/axios-config";
 import { showDynamicAlert } from '../showDynamicAlert';
+import { DataUser } from "@/components/DataUser";
+import { useRouter } from "next/router";
 
 const AdminContent = ({kData, modal}) => {
   const [isFileSelected, setIsFileSelected] = useState(false);
@@ -15,6 +17,10 @@ const AdminContent = ({kData, modal}) => {
   const [dataAll, setDataAll] = useState([]);
 
   const fifiAxios = configureAxios();
+  const myUser = DataUser();
+    const UserId = myUser !== null ? myUser.id_user : null;
+
+  const router = useRouter();
 
   const handleMediaClick = (imageName) => {
     kData.media = imageName;
@@ -25,17 +31,18 @@ const AdminContent = ({kData, modal}) => {
   console.log(publicApi);
     // GET DATA API
 const fetchData = async () => {
+  if (myUser !== null) {
   try {
     let mediaType = activeTab === 'image' ? 'image' : 'video';
 
     // Mengambil data total
-    const countResponse = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const countResponse = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}&user_id=${UserId}`);
     const countData = countResponse.data;
     const totalCount = countData.total;
     setTotalMedia(totalCount);
 
     // Mengambil data keseluruhan
-    const response = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}`);
+    const response = await fifiAxios.get(`${linkApi}?page=${currentPage}&type=${mediaType}&user_id=${UserId}`);
     const dataAmbil = response.data; // Menggunakan variabel 'response' untuk mengambil data, bukan 'countResponse'
     
     // Set data ke state
@@ -45,6 +52,7 @@ const fetchData = async () => {
   } catch (error) {
     console.error('Terjadi kesalahan:', error);
   }
+}
 };
 
   const handlePageChange = (page) => {
@@ -73,7 +81,7 @@ const fetchData = async () => {
     selectedFiles.forEach((file) => {
       formData.append('nama', file);
     });
-    formData.append('user_id', '1');
+    formData.append('user_id', UserId);
 
     try {
     const response = await fifiAxios.post(`${linkApi}`, formData, {
@@ -84,9 +92,10 @@ const fetchData = async () => {
 
       if (response.status === 200) { // Ubah dari response.ok menjadi response.status
         showDynamicAlert('Media berhasil diunggah', 'successTime');
+        // router.push("/admin/media")
         fetchData(); // Pastikan bahwa fetchData() bekerja dengan benar untuk memperbarui data.
       } else {
-        alert('Terjadi kesalahan saat mengunggah media');
+        showDynamicAlert('Terjadi kesalahan saat mengunggah media', "errorTime");
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
@@ -111,7 +120,7 @@ const fetchData = async () => {
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, activeTab]);
+  }, [currentPage, activeTab, myUser]);
 
   // PAGENASI
 const renderPagination = () => {
@@ -128,7 +137,7 @@ const renderPagination = () => {
     href="#"
       key={pageNumber}
       onClick={() => handlePageChange(pageNumber)}
-      className={`page-link rounded-circle ${currentPage === pageNumber ? 'active' : ''}`}
+      className={`page-link rounded-circle ${currentPage === pageNumber ? 'active btn-app' : ''}`}
     >
       {pageNumber}
     </Link>
@@ -186,7 +195,7 @@ const renderPagination = () => {
                     Image
                   </button>
                 </li>
-                <li className="nav-item flex-fill" role="presentation">
+                {/* <li className="nav-item flex-fill" role="presentation">
                   <button
                     className={`nav-link w-100 ${activeTab === 'video' ? 'active' : ''}`}
                     id="profile-tab"
@@ -200,7 +209,7 @@ const renderPagination = () => {
                   >
                     Videos
                   </button>
-                </li>
+                </li> */}
                 <li className="nav-item flex-fill" role="presentation">
                   <button className="nav-link w-100" id="contact-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-contact" type="button" role="tab" aria-controls="upload" aria-selected="false" tabIndex="-1">Upload</button>
                 </li>

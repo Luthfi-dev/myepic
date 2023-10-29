@@ -8,6 +8,7 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+
 :root {
   scroll-behavior: smooth;
 }
@@ -19,12 +20,12 @@ body {
 }
 
 a {
-  color: #4154f1;
+  color: #4D7B9D;
   text-decoration: none;
 }
 
 a:hover {
-  color: #717ff5;
+  color: #4D7B9D;
   text-decoration: none;
 }
 
@@ -360,13 +361,13 @@ h6 {
 
 .nav-tabs-bordered .nav-link:hover,
 .nav-tabs-bordered .nav-link:focus {
-  color: #4154f1;
+  color: #E73539;
 }
 
 .nav-tabs-bordered .nav-link.active {
   background-color: #fff;
-  color: #4154f1;
-  border-bottom: 2px solid #4154f1;
+  color: #E73539;
+  border-bottom: 2px solid #4D7B9D;
 }
 
 /*--------------------------------------------------------------
@@ -702,7 +703,7 @@ h6 {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #4154f1;
+  color: #E73539;
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
@@ -712,7 +713,7 @@ h6 {
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  color: #E73539;
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -725,12 +726,12 @@ h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
+  color: #E73539;
   background: #f6f9ff;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #E73539;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -768,11 +769,11 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: #E73539;
 }
 
 .sidebar-nav .nav-content a.active i {
-  background-color: #4154f1;
+  background-color: #E73539;
 }
 
 /*--------------------------------------------------------------
@@ -795,7 +796,7 @@ h6 {
 
 .dashboard .filter .icon:hover,
 .dashboard .filter .icon:focus {
-  color: #4154f1;
+  color: #E73539;
 }
 
 .dashboard .filter .dropdown-header {
@@ -1260,11 +1261,42 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+/* ========== */
 
 /* new button */
 .btn-app {
-  background-color: #6C63FF !important;
+  background-color: #4D7B9D !important;
   color: white !important;
   /* Gaya lainnya dengan !important */
 }
+
+/* Mengubah latar belakang menu aktif menjadi hijau */
+.nav-link.active {
+  color: #E73539;
+}
+
+.color-app {
+  color:#E73539;
+}
+
+.bg-app {
+  background-color: #E73539;
+}
+
+.bg-app2 {
+  background-color: #4D7B9D;
+}
+
+.color-app2 {
+  color: #4D7B9D;
+}
+
+.silver-app {
+  background-color: #F5F6F8;
+}
+
+.bg-primary {
+  background-color: #4D7B9D;
+}
+
 
