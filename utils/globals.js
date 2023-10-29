@@ -1,4 +1,4 @@
-export const myAppLink = "http://localhost:3000";
+export const myAppLink = "https://myepic.vercel.app";
 export const myAppLinkApi = "https://ex.luth.my.id";
 
 export const linkApi = `${myAppLinkApi}/api/media`;
@@ -23,6 +23,9 @@ export const searchUser = `${myAppLinkApi}/api/search`;
 export const managUser = `${myAppLinkApi}/api/manag/user`;
 
 export const menuApi = `${myAppLinkApi}/menu/read-menu/parent`;
+
+export const SECRETKEY_TOKEN =
+  "020bf63cbf793694ec956cc3673306c38eb75647738ee0e857f8c7b6d37e1498fd7fc27106263e90c331542a1a36955416bfa8f4e2c40f88d881a9b07700e48a";
 
 // SSO
 export const GOOGLE_CLIENT_ID =

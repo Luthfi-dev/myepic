@@ -4,21 +4,18 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import {
   GOOGLE_CLIENT_ID,
+  SECRETKEY_TOKEN,
   cekMailApi,
   client_ID,
   reqTokenApi,
   signupApi,
   tenan_ID,
-  userApi,
+  myAppLink
 } from "../../../utils/globals";
 import "/public/assets/custom/login/index.scss";
 // import configureAxios from "../../../pages/axios-config";
 import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 import { useRouter } from "next/router";
-
-// MS LOGIN
-// import { useMsal } from "@azure/msal-react";
-// import msalConfig from "../../../config/msalConfig";
 
 const AuthLogin = () => {
   const [prosesSSOGg, setProsesSSOGg] = useState(false);
@@ -77,7 +74,7 @@ const AuthLogin = () => {
 };
 
 const handleSetCookie = (name, value, duration) => {
-  const secretKey = "020bf63cbf793694ec956cc3673306c38eb75647738ee0e857f8c7b6d37e1498fd7fc27106263e90c331542a1a36955416bfa8f4e2c40f88d881a9b07700e48a";
+  const secretKey = SECRETKEY_TOKEN;
   const encryptedValue = encryptData(value, secretKey);
 
   setCookie(name, encryptedValue, duration);
@@ -275,14 +272,12 @@ const handleSubmitLogin = async (event) => {
     }
   };
 
-
+console.log(`${myAppLink}/auth/login`)
   // bagian login
    const handleLoginMS = () => {
-    // const clientID = "10a4c7e9-17dc-4f63-9849-a2b4e0929389"
-    // const tenantID = "26ae6adf-61be-443f-8dc4-6531b61a9a38"
     const clientID = client_ID;
     const tenantID = tenan_ID; 
-    const directURI = "http://localhost:3000/auth/login";
+    const directURI = `${myAppLink}/auth/login`;
     const fullURL =
       "https://login.microsoftonline.com/" +
       tenantID +
@@ -295,9 +290,8 @@ const handleSubmitLogin = async (event) => {
   };
 
   const handleLoginGoogle = () => {
-    // const clientID = "943624068454-oo58hl2hh7ft9kv4m2t5l4fvslbq96ah.apps.googleusercontent.com";
     const clientID = GOOGLE_CLIENT_ID;
-    const redirectURI = "http://localhost:3000/auth/login";
+    const redirectURI = `${myAppLink}/auth/login`;
     const scope = "openid profile email";
 
     const fullURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=token`;
