@@ -1,4 +1,5 @@
 export const myAppLink = "https://myepic.vercel.app";
+
 export const myAppLinkApi = "https://ex.luth.my.id";
 
 export const linkApi = `${myAppLinkApi}/api/media`;
