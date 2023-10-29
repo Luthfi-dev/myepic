@@ -10,7 +10,7 @@ import {
   reqTokenApi,
   signupApi,
   tenan_ID,
-  userApi,
+  myAppLink,
 } from "../../../utils/globals";
 import "/public/assets/custom/login/index.scss";
 // import configureAxios from "../../../pages/axios-config";

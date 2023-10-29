@@ -10,16 +10,12 @@ import {
   reqTokenApi,
   signupApi,
   tenan_ID,
-  userApi,
+  myAppLink
 } from "../../../utils/globals";
 import "/public/assets/custom/login/index.scss";
 // import configureAxios from "../../../pages/axios-config";
 import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 import { useRouter } from "next/router";
-
-// MS LOGIN
-// import { useMsal } from "@azure/msal-react";
-// import msalConfig from "../../../config/msalConfig";
 
 const AuthLogin = () => {
   const [prosesSSOGg, setProsesSSOGg] = useState(false);
@@ -276,7 +272,7 @@ const handleSubmitLogin = async (event) => {
     }
   };
 
-
+console.log(`${myAppLink}/auth/login`)
   // bagian login
    const handleLoginMS = () => {
     // const clientID = "10a4c7e9-17dc-4f63-9849-a2b4e0929389"

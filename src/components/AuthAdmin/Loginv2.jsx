@@ -11,7 +11,7 @@ import {
   reqTokenApi,
   signupApi,
   tenan_ID,
-  userApi,
+  myAppLink
 } from "../../../utils/globals";
 import { showDynamicAlert } from "@/Contents/showDynamicAlert";
 import { useRouter } from "next/router";
